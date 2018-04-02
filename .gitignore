@@ -1,0 +1,25 @@
+bin/*
+target/*
+doc/*
+idl_examples/*
+lib/*
+pictures/*
+.classpath
+
+Change.log
+
+# Compiled class file
+*.class
+# Log file
+*.log
+
+.metadata/*
+.settings/*
+.project
+
+# Package Files #
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
