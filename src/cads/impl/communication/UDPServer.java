@@ -7,18 +7,21 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class UDPServer implements Server<String> {
+import cads.impl.mom.MessageHandler;
+
+public class UDPServer implements Server<String> {
 
 	private DatagramSocket serverSocket;
+	private MessageHandler msgHandler;
 
-	public UDPServer(int port) throws SocketException {
+	public UDPServer(int port, MessageHandler msgHandler) throws SocketException {
 		serverSocket = new DatagramSocket(port);
+		this.msgHandler = msgHandler;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
+		receive();
 	}
 
 	@Override
@@ -30,6 +33,7 @@ class UDPServer implements Server<String> {
 				serverSocket.receive(receivePacket);
 				Logger.getLogger(UDPClient.class.getName()).log(Level.INFO,
 						"Receive message successfully:\n" + getInfo());
+				msgHandler.setNextMessage(new String(receivePacket.getData()));
 			} catch (IOException e) {
 				Logger.getLogger(UDPServer.class.getName()).log(Level.WARNING,
 						"Receive message failed:\n" + getInfo() + "\n", e);
