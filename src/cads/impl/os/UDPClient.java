@@ -1,4 +1,4 @@
-package cads.impl.communication;
+package cads.impl.os;
 
 import java.io.*;
 import java.net.*;
@@ -10,15 +10,13 @@ import cads.impl.mom.MessageHandler;
 public class UDPClient implements Client<String> {
 
 	private DatagramSocket clientSocket;
-	private MessageHandler msgHandler;
 	private int port;
 	private InetAddress dest_ip;
 
-	public UDPClient(InetAddress iPAddress, int port, MessageHandler msgHandler) throws SocketException {
+	public UDPClient(InetAddress iPAddress, int port) throws SocketException {
 		this.clientSocket = new DatagramSocket();
 		this.port = port;
 		this.dest_ip = iPAddress;
-		this.msgHandler = msgHandler;
 	}
 
 	@Override
@@ -34,14 +32,6 @@ public class UDPClient implements Client<String> {
 		}
 	}
 
-	@Override
-	public void run() {
-
-		String msg = msgHandler.getNextMessage();
-		send(msg);
-		send(msg);
-
-	}
 
 	@Override
 	public void stop() {

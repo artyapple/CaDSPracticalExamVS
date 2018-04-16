@@ -1,6 +1,9 @@
 package cads.impl.mom;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -10,30 +13,44 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-public class MessageHandler {
+import cads.impl.os.Client;
+import cads.impl.os.Server;
 
-	private IBuffer<Message> buffer;
+public class MessageHandler implements Runnable {
+
+	private MessageBuffer<Message> buffer;
 	private MarshallingService ms;
+	private Client<String> client;
+	private Server<String> server;
 	AtomicInteger seq = new AtomicInteger();
 
-	public MessageHandler(IBuffer<Message> buffer, MarshallingService ms) {
+	// Runnable
+	public MessageHandler(MessageBuffer<Message> buffer, Client<String> client, Server<String> server) throws SocketException, UnknownHostException  {
 		this.buffer = buffer;
-		this.ms = ms;
+		this.ms = new MarshallingService();
+		this.client = client;
+		this.server = server;
+		//factory ist gut
+		new Thread(this).start();
 	}
 	
-	public synchronized String getNextMessage() {
+	public synchronized void sendNextMessage() {
 		Message message = buffer.getLastMessage();
+		
 		message.setSeqId(seq.incrementAndGet());
+		String serMsg = null;
 		try {
-			return ms.serialize(message);
+			serMsg = ms.serialize(message);
 		} catch (JsonProcessingException e) {
 			Logger.getLogger(MessageHandler.class.getName()).log(Level.WARNING, "Serialization failed. Message id:"
 					+ message.getSeqId() + "; type: " + message.getType() + "; value" + message.getValue());
 		}
-		return "";
+		client.send(serMsg);
 	}
 
-	public synchronized void setNextMessage(String msg) throws JsonParseException, JsonMappingException, IOException {
+	public synchronized void recieveNextMessage() throws JsonParseException, JsonMappingException, IOException {
+		String msg = new String(server.receive());
+		
 		if (!msg.isEmpty() && null != msg) {
 			Message message = null;
 			message = ms.deSerialize(msg, Message.class);
@@ -53,5 +70,12 @@ public class MessageHandler {
 	
 	public synchronized boolean hasMessages(){
 		return buffer.hasMessages();
+	}
+
+	@Override
+	public void run() {
+		while(true){
+			sendNextMessage();
+		}
 	}
 }

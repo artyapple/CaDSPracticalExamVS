@@ -1,4 +1,4 @@
-package cads.impl.communication;
+package cads.impl.os;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,20 +12,13 @@ import cads.impl.mom.MessageHandler;
 public class UDPServer implements Server<String> {
 
 	private DatagramSocket serverSocket;
-	private MessageHandler msgHandler;
 
-	public UDPServer(int port, MessageHandler msgHandler) throws SocketException {
+	public UDPServer(int port) throws SocketException {
 		serverSocket = new DatagramSocket(port);
-		this.msgHandler = msgHandler;
 	}
 
 	@Override
-	public void run() {
-		receive();
-	}
-
-	@Override
-	public void receive() {
+	public byte[] receive() {
 		while (true) {
 			byte[] receiveData = new byte[BUFFER_SIZE];
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -33,11 +26,11 @@ public class UDPServer implements Server<String> {
 				serverSocket.receive(receivePacket);
 				Logger.getLogger(UDPClient.class.getName()).log(Level.INFO,
 						"Receive message successfully:\n" + getInfo());
-				msgHandler.setNextMessage(new String(receivePacket.getData()));
 			} catch (IOException e) {
 				Logger.getLogger(UDPServer.class.getName()).log(Level.WARNING,
 						"Receive message failed:\n" + getInfo() + "\n", e);
 			}
+			return receiveData; 
 		}
 	}
 
