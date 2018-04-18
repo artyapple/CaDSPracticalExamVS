@@ -63,7 +63,7 @@ public class ClientApplication {
 		Server<String> serverH = new UDPServer(8011);		
 		// NETWORK SETUP END for horizontal
 		
-		//4) Message handler for vertikal
+		//4) Message handler for horizontal
 		MessageHandler horizontalMom = new MessageHandler(horizontalMessageBuffer, clientH, serverH);
 		//5)horizontal ready
 		
