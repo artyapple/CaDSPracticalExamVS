@@ -1,11 +1,9 @@
 package cads.impl.app.client;
 
-import java.awt.FlowLayout;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import javax.swing.JFrame;
 import org.cads.ev3.gui.swing.CaDSRobotGUISwing;
 import org.cads.ev3.rmi.consumer.ICaDSRMIConsumer;
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveGripper;
@@ -40,7 +38,7 @@ public class ClientApplication {
 		IIDLCaDSEV3RMIMoveVertical vertikal = new VerticalMovingGuiController(buffer);		
 
 		//3)NETWORK SETUP for vertikal!
-		// servers ip and port ?! klaren
+		// servers ip and port ?! klaeren
 		Client<String> client= new UDPClient(InetAddress.getByName("localhost"), 8010);
 		//  port ?
 		Server<String> server = new UDPServer(8010);		
