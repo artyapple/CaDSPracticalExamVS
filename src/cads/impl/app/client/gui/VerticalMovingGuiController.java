@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveVertical;
 
 import cads.impl.app.client.service.ServiceVertikalMotor;
-import cads.impl.hal.client.VertikalMotor;
+import cads.impl.mom.Message;
 import cads.impl.mom.MessageBuffer;
 
 /**
@@ -16,7 +16,7 @@ public class VerticalMovingGuiController implements IIDLCaDSEV3RMIMoveVertical {
 
 	private ServiceVertikalMotor verticalMotorService;
 	
-	public VerticalMovingGuiController(MessageBuffer buffer) throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
+	public VerticalMovingGuiController(MessageBuffer<Message> buffer) throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
 		verticalMotorService = new ServiceVertikalMotor(buffer);
 	}
 	

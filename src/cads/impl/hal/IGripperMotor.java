@@ -4,7 +4,7 @@ package cads.impl.hal;
  * and can open it or close it.
  * @author AI
  */
-public interface GripperMotor {
+public interface IGripperMotor {
 	/**
 	 * opens gripper
 	 */

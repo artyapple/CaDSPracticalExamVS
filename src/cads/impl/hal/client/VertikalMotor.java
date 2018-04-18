@@ -16,7 +16,7 @@ public class VertikalMotor implements IVertikalMotor {
 	
 	@Override
 	public void move(int value) {
-		Message msg = new Message(MsgType.GRIPPER, 1, value, 0);
+		Message msg = new Message(MsgType.VERTIKAL, 1, value, 0);
 		buffer.addMessage(msg);
 	}
 
