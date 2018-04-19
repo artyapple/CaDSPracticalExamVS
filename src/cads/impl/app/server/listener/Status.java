@@ -1,43 +1,60 @@
 package cads.impl.app.server.listener;
 
-public class StatusMove {
+public class Status {
 
-	enum State{
-		vertical, horizontal
-	}
+	public enum StatusType {VERTICAL, HORIZONTAL, GRAB, NONE}
 	
-	enum Type{
-		GRIPPER_INFO
-	}
-	
-	private State status;
-	private Type type;
+	private String state;
+	private String type;
+	private String value;
 	private int percent;
 	
-	public StatusMove(){
-		super();
+	public StatusType getStatusType() {
+		switch (state) {
+			case "vertical":
+				return StatusType.VERTICAL;
+			case "horizontal":
+				return StatusType.HORIZONTAL;
+			case "gripper":
+				return StatusType.GRAB;
+			case "ultraSonic":
+			default:
+				return StatusType.NONE;
+		}
 	}
-	public StatusMove(State status, Type type, int percent) {
-		super();
-		this.status = status;
-		this.type = type;
-		this.percent = percent;
+	
+	public boolean isGrapOpen() {
+		return "open".equals(value);
 	}
-	public State getStatus() {
-		return status;
+	
+	public String getState() {
+		return state;
 	}
-	public void setStatus(State status) {
-		this.status = status;
-	}
-	public Type getType() {
+
+	public String getType() {
 		return type;
 	}
-	public void setType(Type type) {
-		this.type = type;
+
+	public String getValue() {
+		return value;
 	}
+
 	public int getPercent() {
 		return percent;
 	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	public void setPercent(int percent) {
 		this.percent = percent;
 	}
