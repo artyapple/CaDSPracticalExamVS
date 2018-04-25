@@ -46,16 +46,12 @@ public class Watchdog implements Runnable {
 		}
 	}
 
-	public byte[] receiveACK() {
+	public byte[] receive() throws IOException {
 
 		byte[] receiveData = new byte[1024];
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		try {
-			socket.receive(receivePacket);
-			System.out.println("receive" + receiveData);
-		} catch (IOException e) {
-			
-		}
+		socket.receive(receivePacket);
+		System.out.println("receive" + receiveData);
 		return receiveData;
 
 	}
@@ -71,7 +67,7 @@ public class Watchdog implements Runnable {
 				
 				// check ACK
 				try {
-					receiveData = receiveACK();
+					receiveData = receive();
 				} catch (Exception e) {
 					// TODO: handle exception - TIMEOUT
 					System.out.println("Timeout!");
@@ -91,7 +87,11 @@ public class Watchdog implements Runnable {
 				seq++;
 			} else if (type == Type.CLIENT) {
 				// return ping as ACK
-				receiveData = receiveACK();
+				try {
+					receiveData = receive();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				send(receiveData.toString());
 			}
 
