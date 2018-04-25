@@ -1,6 +1,7 @@
 package cads.impl.app.server;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 import org.cads.ev3.middleware.CaDSEV3RobotType;
@@ -19,9 +20,11 @@ import cads.impl.hal.IVertikalMotor;
 import cads.impl.hal.server.HorizontalMotor;
 import cads.impl.hal.server.VertikalMotor;
 import cads.impl.mom.MarshallingService;
+import cads.impl.mom.Watchdog;
+import cads.impl.mom.Watchdog.Type;
 
 public class ServerApplication {
-
+	
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
 
 		 RobotStatusListener statusListener = new RobotStatusListener();
@@ -32,12 +35,20 @@ public class ServerApplication {
 		 HorizontalMotor hmotor = new HorizontalMotor();
 		 statusListener.subscribe(ValueToObserve.HORIZONTAL, hmotor);
 		 
-		 vmotor.move(50);
-		 vmotor.move(0);
-		 vmotor.move(100);
-		 hmotor.move(100);
-		 vmotor.move(0);
-		 hmotor.move(50);
+		 // Watchdog
+		 Watchdog watchdog;
+		 watchdog = new Watchdog(InetAddress.getByName("localhost"), 8099, Type.SERVER);
+		 Thread watchdogThread = new Thread(watchdog);
+		 watchdogThread.start();
+		 
+		 // Testinstructions
+		 
+//		 vmotor.move(50);
+//		 vmotor.move(0);
+//		 vmotor.move(100);
+//		 hmotor.move(100);
+//		 vmotor.move(0);
+//		 hmotor.move(50);
 
 	}
 }
