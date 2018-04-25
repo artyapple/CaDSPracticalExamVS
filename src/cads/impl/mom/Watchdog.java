@@ -88,7 +88,7 @@ public class Watchdog implements Runnable {
 				try {Thread.sleep(1000);} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
+				seq++;
 			} else if (type == Type.CLIENT) {
 				// return ping as ACK
 				receiveData = receiveACK();
