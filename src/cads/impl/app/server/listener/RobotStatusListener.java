@@ -38,13 +38,11 @@ public class RobotStatusListener implements ICaDSEV3RobotStatusListener {
 
 	@Override
 	public void onStatusMessage(JSONObject json) {
-
 		try {
 			Status status = ms.deSerialize(json.toJSONString(), Status.class);
 			if (status.getStatusType().equals(Status.StatusType.VERTICAL)) {
 				vertikalValue.setValue(status.getPercent());
 			} else if (status.getStatusType().equals(Status.StatusType.HORIZONTAL)) {
-				System.out.println(status.getPercent());
 				horizontalValue.setValue(status.getPercent());
 			} else if (status.getStatusType().equals(Status.StatusType.GRAB)) {
 				gripperOpen.setValue(status.isGrapOpen());

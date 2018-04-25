@@ -38,9 +38,6 @@ private enum DirectionHorizonal {LEFT, RIGHT, NONE}
 	public void update(Observable o, Object arg) {
 		ObservableValue<Integer> currentObservable =(ObservableValue<Integer>)o; 
 		currentValue = currentObservable.getValue();
-//		System.out.println("HAL:" + currentValue);
-//		System.out.println("HAL:" + targetValue);
-//		System.out.println("HAL:" + direction.toString());
 		if ((direction == DirectionHorizonal.LEFT && currentValue >= targetValue)
 				|| (direction == DirectionHorizonal.RIGHT && currentValue <= targetValue)) {		
 			robot.stop_h();
