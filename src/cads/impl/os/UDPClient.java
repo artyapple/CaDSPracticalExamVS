@@ -5,7 +5,6 @@ import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cads.impl.mom.MessageHandler;
 
 public class UDPClient implements Client<String> {
 
@@ -17,6 +16,12 @@ public class UDPClient implements Client<String> {
 		this.clientSocket = new DatagramSocket();
 		this.port = port;
 		this.dest_ip = iPAddress;
+	}
+	
+	public UDPClient(String iPAddress, int port) throws SocketException, UnknownHostException {
+		this.clientSocket = new DatagramSocket();
+		this.port = port;
+		this.dest_ip = InetAddress.getByName(iPAddress);
 	}
 
 	@Override
