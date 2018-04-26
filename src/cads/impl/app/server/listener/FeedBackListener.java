@@ -9,5 +9,4 @@ public class FeedBackListener implements ICaDSEV3RobotFeedBackListener {
 	public void giveFeedbackByJSonTo(JSONObject arg0) {
 		// TODO Auto-generated method stub
 	}
-
 }

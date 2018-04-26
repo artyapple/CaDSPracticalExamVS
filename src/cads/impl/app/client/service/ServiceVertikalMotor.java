@@ -10,8 +10,6 @@ import cads.impl.mom.IMessage;
 import cads.impl.mom.MarshallingService;
 import cads.impl.mom.Message;
 import cads.impl.mom.MessageBuffer;
-import cads.impl.mom.MessageHandler;
-import cads.impl.os.Client;
 import cads.impl.os.UDPClient;
 
 public class ServiceVertikalMotor {
