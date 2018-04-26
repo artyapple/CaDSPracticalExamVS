@@ -23,11 +23,10 @@ public class UDPClient implements Client<String> {
 		this.port = port;
 		this.dest_ip = InetAddress.getByName(iPAddress);
 	}
-
 	@Override
-	public void send(String msg) {
+	public void send(String msg, int destport, InetAddress destip) {
 		byte[] sendData = msg.getBytes();
-		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dest_ip, port);
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, destip, destport);
 		try {
 			clientSocket.send(sendPacket);
 			Logger.getLogger(UDPClient.class.getName()).log(Level.INFO, "Send message successfully:\n" + getInfo());
@@ -35,6 +34,11 @@ public class UDPClient implements Client<String> {
 			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
 					"Send message failed:\n" + getInfo() + "\n" + msg, e);
 		}
+	}
+	
+	@Override
+	public void send(String msg) {
+		send(msg, port, dest_ip);
 	}
 
 

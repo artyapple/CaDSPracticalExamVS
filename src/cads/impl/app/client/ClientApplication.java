@@ -70,6 +70,9 @@ public class ClientApplication {
 		
 		new Thread(vertikalMom).start();
 		new Thread(horizontalMom).start();
+		
+		// Watchdog
+		
 
 	}
 

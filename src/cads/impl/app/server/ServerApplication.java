@@ -32,6 +32,8 @@ import cads.impl.mom.Message;
 import cads.impl.mom.MessageBuffer;
 import cads.impl.mom.Middleware;
 import cads.impl.mom.ServerMiddleware;
+import cads.impl.mom.watchdog.Watchdog;
+import cads.impl.mom.watchdog.WatchdogServerSide;
 import cads.impl.mom.Message.MsgType;
 import cads.impl.os.Client;
 import cads.impl.os.Server;
@@ -71,5 +73,7 @@ public class ServerApplication {
 		
 		new Thread(horizontalMom).start();
 		new Thread(horizontalRobotController).start();
+		
+		//Watchdog w = new WatchdogServerSide("localhost", 9001);
 	}
 }

@@ -7,7 +7,6 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class UDPServer implements Server<String> {
 
 	private DatagramSocket serverSocket;
@@ -16,22 +15,39 @@ public class UDPServer implements Server<String> {
 		serverSocket = new DatagramSocket(port);
 	}
 
+	public UDPServer(int port, int timeout) throws SocketException {
+		this(port);
+		this.serverSocket.setSoTimeout(timeout);
+
+	}
+
+	// @Override
+	// public byte[] receive() {
+	// System.out.println("server start");
+	// byte[] receiveData = new byte[BUFFER_SIZE];
+	// DatagramPacket receivePacket = new DatagramPacket(receiveData,
+	// receiveData.length);
+	// try {
+	// serverSocket.receive(receivePacket);
+	// Logger.getLogger(UDPClient.class.getName()).log(Level.INFO,
+	// "Receive message successfully:\n" + getInfo());
+	// } catch (IOException e) {
+	// Logger.getLogger(UDPServer.class.getName()).log(Level.WARNING,
+	// "Receive message failed:\n" + getInfo() + "\n", e);
+	// }
+	// System.out.println("server end");
+	// return receiveData;
+	// }
+
 	@Override
-	public byte[] receive() {
-			System.out.println("server start");
-			byte[] receiveData = new byte[BUFFER_SIZE];
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			try {
-				serverSocket.receive(receivePacket);
-				Logger.getLogger(UDPClient.class.getName()).log(Level.INFO,
-						"Receive message successfully:\n" + getInfo());
-			} catch (IOException e) {
-				Logger.getLogger(UDPServer.class.getName()).log(Level.WARNING,
-						"Receive message failed:\n" + getInfo() + "\n", e);
-			}
-			System.out.println("server end");
-			return receiveData; 
-		
+	public byte[] receive() throws IOException {
+		byte[] receiveData = new byte[BUFFER_SIZE];
+		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+
+		serverSocket.receive(receivePacket);
+		Logger.getLogger(UDPClient.class.getName()).log(Level.INFO, "Receive message successfully:\n" + getInfo());
+
+		return receiveData;
 	}
 
 	@Override

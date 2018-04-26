@@ -3,7 +3,7 @@ package cads.impl.mom;
 public class Message implements IMessage {
 	
 	public enum MsgType {
-	    VERTIKAL, HORIZONTAL, GRIPPER 
+	    VERTIKAL, HORIZONTAL, GRIPPER, PING
 	}
 	
 	private int seqid;
