@@ -3,6 +3,7 @@ package cads.impl.os;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +16,11 @@ public class UDPServer implements Server<String> {
 
 	public UDPServer(int port) throws SocketException {
 		serverSocket = new DatagramSocket(port);
+	}
+	
+	public UDPServer(int port, boolean value) throws SocketException {
+		serverSocket = new DatagramSocket(port);
+		serverSocket.setSoTimeout(500);
 	}
 
 	@Override
@@ -34,6 +40,18 @@ public class UDPServer implements Server<String> {
 		}
 	}
 
+	public void send(String msg, InetAddress dest_ip, int port) {
+		byte[] sendData = msg.getBytes();
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dest_ip, port);
+		try {
+			serverSocket.send(sendPacket);
+			Logger.getLogger(UDPClient.class.getName()).log(Level.INFO, "Send message successfully:\n" + getInfo());
+		} catch (IOException e) {
+			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
+					"Send message failed:\n" + getInfo() + "\n" + msg, e);
+		}
+	}
+	
 	@Override
 	public void stop() {
 		serverSocket.close();

@@ -19,6 +19,22 @@ public class UDPClient implements Client<String> {
 		this.dest_ip = iPAddress;
 	}
 
+	public byte[] receive() {
+		while (true) {
+			byte[] receiveData = new byte[1024];
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			try {
+				clientSocket.receive(receivePacket);
+				Logger.getLogger(UDPClient.class.getName()).log(Level.INFO,
+						"Receive message successfully:\n" + getInfo());
+			} catch (IOException e) {
+				Logger.getLogger(UDPServer.class.getName()).log(Level.WARNING,
+						"Receive message failed:\n" + getInfo() + "\n", e);
+			}
+			return receiveData; 
+		}
+	}
+	
 	@Override
 	public void send(String msg) {
 		byte[] sendData = msg.getBytes();
@@ -32,7 +48,17 @@ public class UDPClient implements Client<String> {
 		}
 	}
 
-
+	public void send(String msg, InetAddress dest_ip, int port) {
+		byte[] sendData = msg.getBytes();
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dest_ip, port);
+		try {
+			clientSocket.send(sendPacket);
+			Logger.getLogger(UDPClient.class.getName()).log(Level.INFO, "Send message successfully:\n" + getInfo());
+		} catch (IOException e) {
+			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
+					"Send message failed:\n" + getInfo() + "\n" + msg, e);
+		}
+	}
 	@Override
 	public void stop() {
 		clientSocket.close();

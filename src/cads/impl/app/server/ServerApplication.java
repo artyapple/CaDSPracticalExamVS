@@ -37,7 +37,7 @@ public class ServerApplication {
 		 
 		 // Watchdog
 		 Watchdog watchdog;
-		 watchdog = new Watchdog(InetAddress.getByName("localhost"), 8099, Type.SERVER);
+		 watchdog = new Watchdog(InetAddress.getByName("localhost"), 8088, Type.SERVER);
 		 Thread watchdogThread = new Thread(watchdog);
 		 watchdogThread.start();
 		 
