@@ -2,33 +2,32 @@ package cads.impl.app.client.gui;
 
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveHorizontal;
 
-import cads.impl.app.client.service.ServiceHorizontalMotor;
+import cads.impl.hal.IHorizontalMotor;
+import cads.impl.hal.client.HorizontalMotor;
+import cads.impl.mom.IBuffer;
 import cads.impl.mom.Message;
-import cads.impl.mom.MessageBuffer;
 
-public class HorizontalMovingGuiController implements IIDLCaDSEV3RMIMoveHorizontal {
+public class HorizontalMoveGuiController implements IIDLCaDSEV3RMIMoveHorizontal {
 
-	private ServiceHorizontalMotor horizontalMotorService;
+	private IHorizontalMotor horizontalMotor;
 	
-	public HorizontalMovingGuiController(MessageBuffer<Message> horizontalMessageBuffer) {
-		horizontalMotorService = new ServiceHorizontalMotor(horizontalMessageBuffer);
+	public HorizontalMoveGuiController(IBuffer<Message> horizontalMessageBuffer) {
+		this.horizontalMotor = new HorizontalMotor(horizontalMessageBuffer);
 	}
 
 	@Override
 	public int getCurrentHorizontalPercent() throws Exception {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int moveHorizontalToPercent(int transactionID, int percent) throws Exception {
-		horizontalMotorService.move(percent);
+		horizontalMotor.move(percent);
 		return 0;
 	}
 
 	@Override
 	public int stop(int transactionID) throws Exception {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

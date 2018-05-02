@@ -46,6 +46,18 @@ public class UDPServer implements Server<String> {
 	public UDPServer(int local_port) throws SocketException {
 		this.serverSocket = new DatagramSocket(local_port);
 	}
+	/**
+	 * 
+	 * @param local_port
+	 * @param timeout
+	 * 
+	 * local host address to bind
+	 * @throws SocketException
+	 */
+	public UDPServer(int local_port, int timeout) throws SocketException {
+		this(local_port);
+		this.serverSocket.setSoTimeout(timeout);
+	}
 
 //	@Override
 //	public byte[] receive() throws IOException {

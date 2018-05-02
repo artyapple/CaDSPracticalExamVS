@@ -7,18 +7,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Middleware implements Runnable {
 
-	protected MessageBuffer<Message> buffer;
+	protected IBuffer<Message> buffer;
 	protected MarshallingService ms;
 	protected AtomicInteger seq = new AtomicInteger();
 
 	// Runnable
-	public Middleware(MessageBuffer<Message> buffer) throws SocketException, UnknownHostException {
+	public Middleware(IBuffer<Message> buffer) throws SocketException, UnknownHostException {
 		this.buffer = buffer;
 		this.ms = new MarshallingService();
 		// factory ist gut
-	}
-	public synchronized boolean hasMessages() {
-		return buffer.hasMessages();
 	}
 	@Override
 	public abstract void run();

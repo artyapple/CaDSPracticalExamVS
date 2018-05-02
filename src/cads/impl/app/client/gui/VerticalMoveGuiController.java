@@ -1,23 +1,21 @@
 package cads.impl.app.client.gui;
 
-import java.net.SocketException;
-import java.net.UnknownHostException;
-
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveVertical;
 
-import cads.impl.app.client.service.ServiceVertikalMotor;
+import cads.impl.hal.IVertikalMotor;
+import cads.impl.hal.client.VertikalMotor;
+import cads.impl.mom.IBuffer;
 import cads.impl.mom.Message;
-import cads.impl.mom.MessageBuffer;
 
 /**
  *  Controller for handling of GUI events of vertical moving.
  */
-public class VerticalMovingGuiController implements IIDLCaDSEV3RMIMoveVertical {
+public class VerticalMoveGuiController implements IIDLCaDSEV3RMIMoveVertical {
 
-	private ServiceVertikalMotor verticalMotorService;
+	private IVertikalMotor vertikalMotor;
 	
-	public VerticalMovingGuiController(MessageBuffer<Message> buffer) throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
-		verticalMotorService = new ServiceVertikalMotor(buffer);
+	public VerticalMoveGuiController(IBuffer<Message> buffer) {
+		vertikalMotor = new VertikalMotor(buffer);
 	}
 	
 	@Override
@@ -27,7 +25,7 @@ public class VerticalMovingGuiController implements IIDLCaDSEV3RMIMoveVertical {
 
 	@Override
 	public int moveVerticalToPercent(int transactionID, int percent) throws Exception {
-		verticalMotorService.move(percent);
+		vertikalMotor.move(percent);
 		return 0;
 	}
 
