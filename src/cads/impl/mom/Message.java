@@ -1,6 +1,6 @@
 package cads.impl.mom;
 
-public class Message implements IMessage {
+public class Message {
 	
 	public enum MsgType {
 	    VERTIKAL, HORIZONTAL, GRIPPER, PING

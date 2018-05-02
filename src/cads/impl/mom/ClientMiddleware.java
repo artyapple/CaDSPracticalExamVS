@@ -11,7 +11,7 @@ public class ClientMiddleware extends Middleware {
 
 	private Client<String> client;
 
-	public ClientMiddleware(MessageBuffer<Message> buffer, Client<String> client)
+	public ClientMiddleware(IBuffer<Message> buffer, Client<String> client)
 			throws SocketException, UnknownHostException {
 		super(buffer);
 		this.client = client;
@@ -26,7 +26,8 @@ public class ClientMiddleware extends Middleware {
 	}
 
 	public synchronized void sendNextMessage() {
-		Message message = buffer.getLastMessage();
+		
+		Message message = buffer.getLast();
 
 		message.setSeqId(seq.incrementAndGet());
 		String serMsg = null;

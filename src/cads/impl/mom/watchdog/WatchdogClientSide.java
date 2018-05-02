@@ -7,24 +7,22 @@ import java.net.UnknownHostException;
 
 public class WatchdogClientSide extends Watchdog {
 
-	public WatchdogClientSide(String dest_ip, int port) throws SocketException, UnknownHostException {
-		super(dest_ip, port);
-		// TODO Auto-generated constructor stub
+	public WatchdogClientSide(String dest_ip, int dest_port, int local_port) throws SocketException, UnknownHostException {
+		super(dest_ip, dest_port, local_port);
 	}
 
 	@Override
 	public void run() {
 		  while (!Thread.interrupted()) {
-			  doClient();
+			  pingServer();
 		  }
 
 	}
 	
-	public void doClient() {
+	public void pingServer() {
 		try {
 			receiveData = server.receive();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		client.send(new String(receiveData));

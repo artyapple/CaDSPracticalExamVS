@@ -23,11 +23,13 @@ public abstract class Watchdog implements Runnable {
 	protected Server<String> server;
 	protected byte[] receiveData = null;
 
-	public Watchdog(String dest_ip, int port) throws SocketException, UnknownHostException {
-
-		// timeout???
-		this.server = new UDPServer(port);
-		this.client = new UDPClient(dest_ip, port);
+	public Watchdog(String dest_ip, int dest_port, int local_port, int timeout) throws SocketException, UnknownHostException {
+		this.server = new UDPServer(local_port, timeout);
+		this.client = new UDPClient(dest_ip, dest_port);
+	}
+	
+	public Watchdog(String dest_ip, int dest_port, int local_port) throws SocketException, UnknownHostException {
+		this(dest_ip, dest_port, local_port, 0);
 	}
 
 	@Override

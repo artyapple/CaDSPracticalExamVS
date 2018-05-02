@@ -4,70 +4,68 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import cads.impl.app.server.listener.ObservableValue;
 import cads.impl.mom.MarshallingService;
 import cads.impl.mom.Message;
 import cads.impl.mom.Message.MsgType;
+import cads.impl.os.UDPClient;
 
 public class WatchdogServerSide extends Watchdog {
 
-	private int seq = 0;
 	private MarshallingService mas;
+	private ObservableValue<Boolean> connectionOk = new ObservableValue<Boolean>(Boolean.TRUE);
+	private AtomicInteger seq = new AtomicInteger();
 
-	public WatchdogServerSide(String dest_ip, int port) throws SocketException, UnknownHostException {
-		super(dest_ip, port);
+	public WatchdogServerSide(String dest_ip, int dest_port, int local_port, int timeout)
+			throws SocketException, UnknownHostException {
+		super(dest_ip, dest_port, local_port, timeout);
 		this.mas = new MarshallingService();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void run() {
-		  while (!Thread.interrupted()) {
-			  doServer();
-		  }
+		while (!Thread.interrupted()) {
+			pingClient();
+		}
 	}
 
-	public void doServer() {
-		Message pingMsg = new Message(MsgType.PING, 0, 0, seq);
+	public void pingClient() {
+		Message pingMsg = new Message(MsgType.PING, 0, 0, seq.incrementAndGet());
 		String ping;
 		try {
 			ping = mas.serialize(pingMsg);
-			Thread.sleep(1000);
+			Thread.sleep(100);
 			client.send(ping);
-		} catch (JsonProcessingException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (JsonProcessingException | InterruptedException e) {
 			e.printStackTrace();
 		}
 
-		// check ACK
 		try {
 			receiveData = server.receive();
 		} catch (Exception e) {
-			// TODO: handle exception - TIMEOUT
-			System.out.println("Timeout!");
+			connectionOk.setValue(false);
+			Logger.getLogger(UDPClient.class.getName()).log(Level.SEVERE,
+					"Ping failed. Stop all motors.");
 		}
 
 		String msg = new String(receiveData);
 		Message rmes;
 		try {
 			rmes = mas.deSerialize(msg, Message.class);
-			if (rmes.getSeqId() == seq) {
-				System.out.println("cool");
-			} else {
-				// TODO some handling
-				System.out.println("not cool " + seq + ", " + msg);
+			if (rmes.getSeqId() != seq.get()) {
+				connectionOk.setValue(false);
+				Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
+						"Ping message lost. Stop all motors.");
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		seq++;
 	}
 
 }

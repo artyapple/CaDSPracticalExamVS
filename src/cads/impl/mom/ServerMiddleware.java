@@ -4,15 +4,19 @@ package cads.impl.mom;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import cads.impl.os.Server;
+import cads.impl.os.UDPClient;
 
 public class ServerMiddleware extends Middleware {
 
 	private Server<String> server;
-
-	public ServerMiddleware(MessageBuffer<Message> buffer, Server<String> server)
+	
+	public ServerMiddleware(IBuffer<Message> buffer, Server<String> server)
 			throws SocketException, UnknownHostException {
 		super(buffer);
 		this.server = server;
@@ -25,7 +29,6 @@ public class ServerMiddleware extends Middleware {
 			try {
 				recieveNextMessage();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -33,23 +36,24 @@ public class ServerMiddleware extends Middleware {
 
 	public synchronized void recieveNextMessage() throws JsonParseException, JsonMappingException, IOException {
 		String msg = new String(server.receive());
-		//to test
-		System.out.println("msg rec");
-		System.out.println(msg);
-		//to test end
+		
 		if (!msg.isEmpty() && null != msg) {
 			Message message = null;
 			message = ms.deSerialize(msg, Message.class);
 
 			if (message.getSeqId() == seq.getAndIncrement()) {
-				// duplicate
+				Logger.getLogger(ServerMiddleware.class.getName()).log(Level.WARNING,
+						"The server received and ignored duplicate of the message with seq id: "+message.getSeqId());
 			} else if (message.getSeqId() == seq.get()) {
-				buffer.addMessage(message);
+				buffer.add(message);
 			} else if (message.getSeqId() > seq.get()) {
-				// packer missing - logger
+				Logger.getLogger(ServerMiddleware.class.getName()).log(Level.WARNING,
+						"Messages with id from "+seq.get()+" to "+(message.getSeqId()-1) +" were lost");
+				buffer.add(message);
 				seq.set(message.getSeqId());
 			} else {
-				// too late
+				Logger.getLogger(ServerMiddleware.class.getName()).log(Level.WARNING,
+						"The server received and ignored the message with seq id: "+message.getSeqId()+" too late.");
 			}
 		}
 	}
