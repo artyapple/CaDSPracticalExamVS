@@ -19,25 +19,21 @@ public class GripperMotor implements IGripperMotor, Observer {
 	public GripperMotor() {
 		this.robot = CaDSEV3RobotHAL.getInstance();
 	}
+	
 	@Override
-	public void open() {
-		if (currentValue) {
-			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
-					"The Gripper is already open. Ignore open command.");
+	public void open(boolean value) {
+		if (currentValue!=value) {
+			if(value){
+				robot.doOpen();
+			}else{
+				robot.doClose();
+			}	
 		} else {
-			robot.doOpen();
+			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
+					"The Gripper is already "+ (value ?"open":"closed")+ ". Ignore command.");
 		}
+	}
 
-	}
-	@Override
-	public void close() {
-		if (currentValue) {
-			robot.doClose();
-		} else {
-			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
-					"The Gripper is already closed. Ignore close command.");
-		}
-	}
 	@Override
 	public void update(Observable o, Object arg) {
 		ObservableValue<Boolean> currentObservable = (ObservableValue<Boolean>) o;

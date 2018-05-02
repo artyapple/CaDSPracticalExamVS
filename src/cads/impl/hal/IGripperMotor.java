@@ -5,12 +5,10 @@ package cads.impl.hal;
  * @author AI
  */
 public interface IGripperMotor {
+
 	/**
-	 * opens gripper
+	 * opens gripper if value true, otherwise closes
+	 * @param value
 	 */
-	public void open();
-	/**
-	 * closes gripper
-	 */
-	public void close();
+	public void open(boolean value);
 }
