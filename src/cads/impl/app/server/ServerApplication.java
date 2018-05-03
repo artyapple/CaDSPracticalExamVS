@@ -60,8 +60,7 @@ public class ServerApplication {
 		RobotController gripperRobotController = new GripperRobotController(gripperBuffer, gmotor);
 		
 		
-		Watchdog w = new WatchdogServerSide("localhost", 9001, 9001, 500);
-		
+		//Watchdog w = new WatchdogServerSide("localhost", 9001, 9001, 500);
 		
 		// start threads
 		new Thread(vertikalMom).start();
@@ -73,7 +72,6 @@ public class ServerApplication {
 		new Thread(gripperMom).start();
 		new Thread(gripperRobotController).start();
 		
-		new Thread(w).start();
-		
+		//new Thread(w).start();
 	}
 }

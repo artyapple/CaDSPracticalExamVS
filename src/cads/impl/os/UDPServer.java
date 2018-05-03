@@ -90,8 +90,7 @@ public class UDPServer implements Server<String> {
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
 		serverSocket.receive(receivePacket);
-		Logger.getLogger(UDPClient.class.getName()).log(Level.INFO, "Receive message successfully:\n" + getInfo());
-
+		
 		return receiveData;
 	}
 

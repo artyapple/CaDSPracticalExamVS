@@ -42,7 +42,6 @@ public class ClientApplication {
 		Middleware gripperMom = new ClientMiddleware(gripperBuffer, gripperUdp);
 		
 		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(null, gripper, vertikal, horizontal, null);
-		// gui.start oder wie auch immer
 		
 		new Thread(vertikalMom).start();
 		new Thread(horizontalMom).start();

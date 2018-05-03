@@ -37,15 +37,16 @@ public class ServerMiddleware extends Middleware {
 	public synchronized void recieveNextMessage() throws JsonParseException, JsonMappingException, IOException {
 		String msg = new String(server.receive());
 		
+		
 		if (!msg.isEmpty() && null != msg) {
 			Message message = null;
 			message = ms.deSerialize(msg, Message.class);
-
 			if (message.getSeqId() == seq.getAndIncrement()) {
 				Logger.getLogger(ServerMiddleware.class.getName()).log(Level.WARNING,
 						"The server received and ignored duplicate of the message with seq id: "+message.getSeqId());
 			} else if (message.getSeqId() == seq.get()) {
 				buffer.add(message);
+				Logger.getLogger(ServerMiddleware.class.getName()).log(Level.INFO, "Message received successfully:\n type: " + message.getType() +" seq id: "+ message.getSeqId());
 			} else if (message.getSeqId() > seq.get()) {
 				Logger.getLogger(ServerMiddleware.class.getName()).log(Level.WARNING,
 						"Messages with id from "+seq.get()+" to "+(message.getSeqId()-1) +" were lost");
