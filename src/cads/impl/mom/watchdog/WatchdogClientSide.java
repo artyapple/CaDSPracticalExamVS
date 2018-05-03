@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import cads.impl.mom.Watchdog;
+
 public class WatchdogClientSide extends Watchdog {
 
 	public WatchdogClientSide(String dest_ip, int dest_port, int local_port) throws SocketException, UnknownHostException {

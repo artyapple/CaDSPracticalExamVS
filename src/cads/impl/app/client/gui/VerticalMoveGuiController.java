@@ -5,7 +5,7 @@ import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveVertical;
 import cads.impl.hal.IVertikalMotor;
 import cads.impl.hal.client.VertikalMotor;
 import cads.impl.mom.IBuffer;
-import cads.impl.mom.Message;
+import cads.impl.mom.buffer.Message;
 
 /**
  *  Controller for handling of GUI events of vertical moving.

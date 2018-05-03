@@ -1,4 +1,4 @@
-package cads.impl.mom;
+package cads.impl.mom.buffer;
 
 public class Message {
 	

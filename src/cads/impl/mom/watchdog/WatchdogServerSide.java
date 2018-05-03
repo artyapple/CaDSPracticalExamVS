@@ -12,8 +12,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import cads.impl.app.server.listener.ObservableValue;
 import cads.impl.mom.MarshallingService;
-import cads.impl.mom.Message;
-import cads.impl.mom.Message.MsgType;
+import cads.impl.mom.Watchdog;
+import cads.impl.mom.buffer.Message;
+import cads.impl.mom.buffer.Message.MsgType;
 import cads.impl.os.UDPClient;
 
 public class WatchdogServerSide extends Watchdog {

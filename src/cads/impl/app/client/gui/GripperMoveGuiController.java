@@ -5,7 +5,7 @@ import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveGripper;
 import cads.impl.hal.IGripperMotor;
 import cads.impl.hal.client.GripperMotor;
 import cads.impl.mom.IBuffer;
-import cads.impl.mom.Message;
+import cads.impl.mom.buffer.Message;
 
 public class GripperMoveGuiController implements IIDLCaDSEV3RMIMoveGripper {
 

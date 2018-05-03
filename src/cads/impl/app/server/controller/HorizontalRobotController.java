@@ -3,8 +3,8 @@ package cads.impl.app.server.controller;
 import java.util.Observable;
 
 import cads.impl.hal.IHorizontalMotor;
-import cads.impl.mom.Message;
-import cads.impl.mom.Buffer;
+import cads.impl.mom.buffer.Buffer;
+import cads.impl.mom.buffer.Message;
 
 public class HorizontalRobotController implements RobotController {
 

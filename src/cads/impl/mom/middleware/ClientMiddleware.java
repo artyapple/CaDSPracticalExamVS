@@ -1,10 +1,14 @@
-package cads.impl.mom;
+package cads.impl.mom.middleware;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import cads.impl.mom.IBuffer;
+import cads.impl.mom.Middleware;
+import cads.impl.mom.buffer.Message;
 import cads.impl.os.Client;
 
 public class ClientMiddleware extends Middleware {

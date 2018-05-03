@@ -1,4 +1,4 @@
-package cads.impl.mom.watchdog;
+package cads.impl.mom;
 
 import java.io.IOException;
 import cads.impl.os.Client;

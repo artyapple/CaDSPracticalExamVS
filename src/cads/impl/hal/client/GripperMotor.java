@@ -2,8 +2,8 @@ package cads.impl.hal.client;
 
 import cads.impl.hal.IGripperMotor;
 import cads.impl.mom.IBuffer;
-import cads.impl.mom.Message;
-import cads.impl.mom.Message.MsgType;
+import cads.impl.mom.buffer.Message;
+import cads.impl.mom.buffer.Message.MsgType;
 
 public class GripperMotor implements IGripperMotor {
 

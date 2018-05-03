@@ -5,7 +5,7 @@ import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveHorizontal;
 import cads.impl.hal.IHorizontalMotor;
 import cads.impl.hal.client.HorizontalMotor;
 import cads.impl.mom.IBuffer;
-import cads.impl.mom.Message;
+import cads.impl.mom.buffer.Message;
 
 public class HorizontalMoveGuiController implements IIDLCaDSEV3RMIMoveHorizontal {
 

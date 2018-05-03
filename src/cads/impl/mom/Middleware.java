@@ -4,6 +4,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import cads.impl.mom.buffer.Message;
+
 
 public abstract class Middleware implements Runnable {
 

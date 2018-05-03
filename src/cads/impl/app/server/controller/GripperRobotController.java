@@ -5,8 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cads.impl.hal.IGripperMotor;
-import cads.impl.mom.Buffer;
-import cads.impl.mom.Message;
+import cads.impl.mom.buffer.Buffer;
+import cads.impl.mom.buffer.Message;
 
 public class GripperRobotController implements RobotController {
 
@@ -28,12 +28,12 @@ public class GripperRobotController implements RobotController {
 
 	@Override
 	public void execute() {
-		if (buffer.hasElements() && inWork) {
+		if (buffer.hasElements()) {
 			Message m = buffer.getLast();
 			if (m.getValue() == 1) {
-				motor.open(Boolean.TRUE);
+				motor.open(true);
 			} else if (m.getValue() == 0) {
-				motor.open(Boolean.FALSE);
+				motor.open(false);
 			} else {
 				Logger.getLogger(GripperRobotController.class.getName()).log(Level.WARNING, "Gripper value is wrong");
 			}

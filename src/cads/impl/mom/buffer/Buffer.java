@@ -1,6 +1,8 @@
-package cads.impl.mom;
+package cads.impl.mom.buffer;
 
 import java.util.concurrent.LinkedBlockingDeque;
+
+import cads.impl.mom.IBuffer;
 
 public class Buffer<T> implements IBuffer<T> {
 

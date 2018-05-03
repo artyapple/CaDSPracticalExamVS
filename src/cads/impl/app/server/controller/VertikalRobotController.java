@@ -4,7 +4,7 @@ import java.util.Observable;
 
 import cads.impl.hal.IVertikalMotor;
 import cads.impl.mom.IBuffer;
-import cads.impl.mom.Message;
+import cads.impl.mom.buffer.Message;
 
 public class VertikalRobotController implements RobotController {
 

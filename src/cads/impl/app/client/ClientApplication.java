@@ -11,11 +11,11 @@ import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveVertical;
 import cads.impl.app.client.gui.GripperMoveGuiController;
 import cads.impl.app.client.gui.HorizontalMoveGuiController;
 import cads.impl.app.client.gui.VerticalMoveGuiController;
-import cads.impl.mom.ClientMiddleware;
 import cads.impl.mom.IBuffer;
-import cads.impl.mom.Message;
-import cads.impl.mom.Buffer;
 import cads.impl.mom.Middleware;
+import cads.impl.mom.buffer.Buffer;
+import cads.impl.mom.buffer.Message;
+import cads.impl.mom.middleware.ClientMiddleware;
 import cads.impl.os.Client;
 import cads.impl.os.UDPClient;
 
