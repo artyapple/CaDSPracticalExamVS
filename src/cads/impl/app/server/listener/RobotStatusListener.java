@@ -35,7 +35,9 @@ public class RobotStatusListener implements ICaDSEV3RobotStatusListener {
 		this.vertikalValue = vertikalValue;
 		this.vertikalValue.setValueType(ValueType.VERTIKAL);
 		this.horizontalValue = horizontalValue;
+		this.horizontalValue.setValueType(ValueType.HORIZONTAL);
 		this.gripperOpen = gripperOpen;
+		this.gripperOpen.setValueType(ValueType.GRIPPER);
 	}
 
 	@Override

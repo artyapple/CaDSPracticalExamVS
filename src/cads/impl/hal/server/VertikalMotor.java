@@ -20,7 +20,7 @@ public class VertikalMotor implements IVertikalMotor, Observer {
 	private int targetValue;
 	private DirectionVertikal direction;
 
-	private boolean eStop = false;
+	private volatile boolean eStop = false;
 
 	public VertikalMotor() {
 		this.robot = CaDSEV3RobotHAL.getInstance();
@@ -46,13 +46,13 @@ public class VertikalMotor implements IVertikalMotor, Observer {
 			ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;
 
 			currentValue = currentObservable.getValue();
-			if (eStop == false) {
-				if ((direction == DirectionVertikal.UP && currentValue >= targetValue)
-						|| (direction == DirectionVertikal.DOWN && currentValue <= targetValue)) {
-					robot.stop_v();
-					direction = DirectionVertikal.NONE;
-				}
+
+			if ((direction == DirectionVertikal.UP && currentValue >= targetValue)
+					|| (direction == DirectionVertikal.DOWN && currentValue <= targetValue)) {
+				robot.stop_v();
+				direction = DirectionVertikal.NONE;
 			}
+
 		} else if (preCast.getValueType() == ValueType.WATCHDOG) {
 			ObservableValue<Boolean> currentBooleanObservable = (ObservableValue<Boolean>) preCast;
 			if (currentBooleanObservable.getValue() == false) {

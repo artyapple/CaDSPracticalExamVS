@@ -62,6 +62,8 @@ public class ServerApplication {
 		
 		WatchdogServerSide w = new WatchdogServerSide("localhost", 9000, 9001, 500);
 		w.registerObserver(vmotor);
+		w.registerObserver(hmotor);
+		w.registerObserver(gmotor);
 		
 		// start threads
 		new Thread(vertikalMom).start();
