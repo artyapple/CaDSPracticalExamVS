@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.cads.ev3.middleware.hal.ICaDSEV3RobotStatusListener;
 import org.json.simple.JSONObject;
 
+import cads.impl.app.server.listener.ObservableValue.ValueType;
 import cads.impl.mom.MarshallingService;
 import cads.impl.os.UDPClient;
 
@@ -32,8 +33,11 @@ public class RobotStatusListener implements ICaDSEV3RobotStatusListener {
 			ObservableValue<Boolean> gripperOpen) {
 		super();
 		this.vertikalValue = vertikalValue;
+		this.vertikalValue.setValueType(ValueType.VERTIKAL);
 		this.horizontalValue = horizontalValue;
+		this.horizontalValue.setValueType(ValueType.HORIZONTAL);
 		this.gripperOpen = gripperOpen;
+		this.gripperOpen.setValueType(ValueType.GRIPPER);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class ServerApplication {
 		
 		VertikalMotor vmotor = new VertikalMotor();
 		statusListener.subscribe(ValueToObserve.VERTIKAL, vmotor);
-		HorizontalMotor hmotor = new HorizontalMotor(horizontalBuffer);
+		HorizontalMotor hmotor = new HorizontalMotor();
 		statusListener.subscribe(ValueToObserve.HORIZONTAL, hmotor);
 		GripperMotor gmotor = new GripperMotor();
 		statusListener.subscribe(ValueToObserve.GRIPPER, gmotor);
@@ -62,7 +62,10 @@ public class ServerApplication {
 		RobotController gripperRobotController = new GripperRobotController(gripperBuffer, gmotor);
 		
 		
-		//Watchdog w = new WatchdogServerSide("localhost", 9001, 9001, 500);
+		WatchdogServerSide w = new WatchdogServerSide("localhost", 9000, 9001, 500);
+		w.registerObserver(vmotor);
+		w.registerObserver(hmotor);
+		w.registerObserver(gmotor);
 		
 		// start threads
 		new Thread(vertikalMom).start();
@@ -74,6 +77,6 @@ public class ServerApplication {
 		new Thread(gripperMom).start();
 		new Thread(gripperRobotController).start();
 		
-		//new Thread(w).start();
+		new Thread(w).start();
 	}
 }

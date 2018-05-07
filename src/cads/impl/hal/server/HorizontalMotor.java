@@ -6,6 +6,7 @@ import java.util.Observer;
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 
 import cads.impl.app.server.listener.ObservableValue;
+import cads.impl.app.server.listener.ObservableValue.ValueType;
 import cads.impl.hal.IHorizontalMotor;
 import cads.impl.mom.IBuffer;
 import cads.impl.mom.buffer.Message;
@@ -16,12 +17,14 @@ public class HorizontalMotor implements IHorizontalMotor, Observer, Runnable {
 		LEFT, RIGHT, NONE
 	}
 
+	private volatile boolean eStop = false;
+	
 	private CaDSEV3RobotHAL robot;
 	private int currentValue;
 	private volatile int targetValue;
 	private DirectionHorizonal direction;
-	
-	public HorizontalMotor(IBuffer<Message> buffer) {
+
+	public HorizontalMotor() {
 		this.robot = CaDSEV3RobotHAL.getInstance();
 	}
 
@@ -30,14 +33,24 @@ public class HorizontalMotor implements IHorizontalMotor, Observer, Runnable {
 		targetValue = value;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void update(Observable o, Object arg) {
-		ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) o;
-		currentValue = currentObservable.getValue();
-		if ((direction == DirectionHorizonal.LEFT && currentValue >= targetValue)
-				|| (direction == DirectionHorizonal.RIGHT && currentValue <= targetValue)) {
-			robot.stop_h();
-			direction = DirectionHorizonal.NONE;
+		ObservableValue preCast = (ObservableValue) o;
+		if (preCast.getValueType() == ValueType.HORIZONTAL) {
+			ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;
+
+			currentValue = currentObservable.getValue();
+			if ((direction == DirectionHorizonal.LEFT && currentValue >= targetValue)
+					|| (direction == DirectionHorizonal.RIGHT && currentValue <= targetValue)) {
+				robot.stop_h();
+				direction = DirectionHorizonal.NONE;
+			}
+		} else if (preCast.getValueType() == ValueType.WATCHDOG) {
+			ObservableValue<Boolean> currentBooleanObservable = (ObservableValue<Boolean>) preCast;
+			if (currentBooleanObservable.getValue() == false) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 

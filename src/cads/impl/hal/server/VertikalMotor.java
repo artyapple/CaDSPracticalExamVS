@@ -6,6 +6,7 @@ import java.util.Observer;
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 
 import cads.impl.app.server.listener.ObservableValue;
+import cads.impl.app.server.listener.ObservableValue.ValueType;
 import cads.impl.hal.IVertikalMotor;
 
 public class VertikalMotor implements IVertikalMotor, Observer, Runnable {
@@ -19,6 +20,8 @@ public class VertikalMotor implements IVertikalMotor, Observer, Runnable {
 	private volatile int targetValue;
 	private DirectionVertikal direction;
 
+	private volatile boolean eStop = false;
+
 	public VertikalMotor() {
 		this.robot = CaDSEV3RobotHAL.getInstance();
 	}
@@ -26,18 +29,29 @@ public class VertikalMotor implements IVertikalMotor, Observer, Runnable {
 	@Override
 	public void move(int value) {
 		targetValue = value;
-
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void update(Observable o, Object arg) {
-		ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) o;
-		currentValue = currentObservable.getValue();
 
-		if ((direction == DirectionVertikal.UP && (currentValue >= targetValue))
-				|| (direction == DirectionVertikal.DOWN && (currentValue <= targetValue))) {
-			robot.stop_v();
-			direction = DirectionVertikal.NONE;
+		ObservableValue preCast = (ObservableValue) o;
+		if (preCast.getValueType() == ValueType.VERTIKAL) {
+			ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;
+
+			currentValue = currentObservable.getValue();
+
+			if ((direction == DirectionVertikal.UP && currentValue >= targetValue)
+					|| (direction == DirectionVertikal.DOWN && currentValue <= targetValue)) {
+				robot.stop_v();
+				direction = DirectionVertikal.NONE;
+			}
+
+		} else if (preCast.getValueType() == ValueType.WATCHDOG) {
+			ObservableValue<Boolean> currentBooleanObservable = (ObservableValue<Boolean>) preCast;
+			if (currentBooleanObservable.getValue() == false) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 

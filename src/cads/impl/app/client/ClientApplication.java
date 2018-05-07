@@ -16,6 +16,7 @@ import cads.impl.mom.Middleware;
 import cads.impl.mom.buffer.Buffer;
 import cads.impl.mom.buffer.Message;
 import cads.impl.mom.middleware.ClientMiddleware;
+import cads.impl.mom.watchdog.WatchdogClientSide;
 import cads.impl.os.Client;
 import cads.impl.os.UDPClient;
 
@@ -46,7 +47,9 @@ public class ClientApplication {
 		new Thread(gripperMom).start();
 		
 		// Watchdog
+		WatchdogClientSide w = new WatchdogClientSide("localhost", 9001, 9000);
 		
+		new Thread(w).start();;
 
 	}
 
