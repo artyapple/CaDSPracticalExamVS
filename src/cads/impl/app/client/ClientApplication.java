@@ -21,8 +21,6 @@ import cads.impl.os.UDPClient;
 
 public class ClientApplication {
 
-	// static CaDSRobotGUISwing gui;
-
 	public static void main(String[] args)
 			throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
 

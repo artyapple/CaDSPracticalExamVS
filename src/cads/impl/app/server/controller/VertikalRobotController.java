@@ -1,7 +1,5 @@
 package cads.impl.app.server.controller;
 
-import java.util.Observable;
-
 import cads.impl.hal.IVertikalMotor;
 import cads.impl.mom.IBuffer;
 import cads.impl.mom.buffer.Message;
@@ -9,11 +7,14 @@ import cads.impl.mom.buffer.Message;
 public class VertikalRobotController implements RobotController {
 
 	private IBuffer<Message> buffer;
-	private IVertikalMotor motor;
+	private volatile IVertikalMotor motor;
+	private Thread motorThread;
 
 	public VertikalRobotController(IBuffer<Message> buffer, IVertikalMotor motor) {
 		this.buffer = buffer;
 		this.motor = motor;
+		motorThread = new Thread((Runnable)motor);
+		motorThread.start();
 	}
 
 	@Override
@@ -21,8 +22,11 @@ public class VertikalRobotController implements RobotController {
 		if (buffer.hasElements()) {
 			Message m;
 			m = buffer.getLast();
-			motor.move(m.getValue());
+			if (m != null) {
+				motor.move(m.getValue());
+			}
 		}
+
 	}
 
 	@Override
@@ -30,11 +34,5 @@ public class VertikalRobotController implements RobotController {
 		while (true) {
 			execute();
 		}
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

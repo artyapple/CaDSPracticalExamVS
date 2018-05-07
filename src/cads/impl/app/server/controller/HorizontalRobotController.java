@@ -1,19 +1,20 @@
 package cads.impl.app.server.controller;
 
-import java.util.Observable;
-
 import cads.impl.hal.IHorizontalMotor;
-import cads.impl.mom.buffer.Buffer;
+import cads.impl.mom.IBuffer;
 import cads.impl.mom.buffer.Message;
 
 public class HorizontalRobotController implements RobotController {
 
-	private Buffer<Message> buffer;
-	private IHorizontalMotor motor;
+	private IBuffer<Message> buffer;
+	private volatile IHorizontalMotor motor;
+	private Thread motorThread;
 
-	public HorizontalRobotController(Buffer<Message> buffer, IHorizontalMotor motor) {
+	public HorizontalRobotController(IBuffer<Message> buffer, IHorizontalMotor motor) {
 		this.buffer = buffer;
 		this.motor = motor;
+		motorThread = new Thread((Runnable) motor);
+		motorThread.start();
 	}
 
 	@Override
@@ -21,7 +22,9 @@ public class HorizontalRobotController implements RobotController {
 		if (buffer.hasElements()) {
 			Message m;
 			m = buffer.getLast();
-			motor.move(m.getValue());
+			if (m != null) {
+				motor.move(m.getValue());
+			}
 		}
 	}
 
@@ -31,11 +34,4 @@ public class HorizontalRobotController implements RobotController {
 			execute();
 		}
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

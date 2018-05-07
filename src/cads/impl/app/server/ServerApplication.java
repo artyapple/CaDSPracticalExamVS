@@ -35,9 +35,12 @@ public class ServerApplication {
 		CaDSEV3RobotHAL robot = CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION, statusListener,
 				new FeedBackListener());
 
+		//horizontal
+				Buffer<Message> horizontalBuffer = new Buffer<>();
+		
 		VertikalMotor vmotor = new VertikalMotor();
 		statusListener.subscribe(ValueToObserve.VERTIKAL, vmotor);
-		HorizontalMotor hmotor = new HorizontalMotor();
+		HorizontalMotor hmotor = new HorizontalMotor(horizontalBuffer);
 		statusListener.subscribe(ValueToObserve.HORIZONTAL, hmotor);
 		GripperMotor gmotor = new GripperMotor();
 		statusListener.subscribe(ValueToObserve.GRIPPER, gmotor);
@@ -48,8 +51,7 @@ public class ServerApplication {
 		Middleware vertikalMom = new ServerMiddleware(vertikalBuffer, vertikalServer);
 		RobotController vertikalRobotController = new VertikalRobotController(vertikalBuffer, vmotor);
 		
-		//horizontal
-		Buffer<Message> horizontalBuffer = new Buffer<>();
+		
 		Server<String> horizontalServer = new UDPServer(8011);
 		Middleware horizontalMom = new ServerMiddleware(horizontalBuffer, horizontalServer);
 		RobotController horizontalRobotController = new HorizontalRobotController(horizontalBuffer, hmotor);

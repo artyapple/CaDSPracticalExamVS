@@ -8,40 +8,49 @@ import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 import cads.impl.app.server.listener.ObservableValue;
 import cads.impl.hal.IVertikalMotor;
 
-public class VertikalMotor implements IVertikalMotor, Observer{
-	
-	private enum DirectionVertikal {UP, DOWN, NONE}
-	
+public class VertikalMotor implements IVertikalMotor, Observer, Runnable {
+
+	private enum DirectionVertikal {
+		UP, DOWN, NONE
+	}
+
 	private CaDSEV3RobotHAL robot;
 	private int currentValue;
-	private int targetValue;
+	private volatile int targetValue;
 	private DirectionVertikal direction;
-	
+
 	public VertikalMotor() {
 		this.robot = CaDSEV3RobotHAL.getInstance();
 	}
-	
+
 	@Override
 	public void move(int value) {
 		targetValue = value;
-		if (value > currentValue) {
-			direction = DirectionVertikal.UP;
-			robot.moveUp();		
-		} else if (value < currentValue) {
-			direction = DirectionVertikal.DOWN;
-			robot.moveDown();		
-		}
+
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-		ObservableValue<Integer> currentObservable =(ObservableValue<Integer>)o; 
+		ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) o;
 		currentValue = currentObservable.getValue();
-		
-		if ((direction == DirectionVertikal.UP && currentValue >= targetValue)
-				|| (direction == DirectionVertikal.DOWN && currentValue <= targetValue)) {		
+
+		if ((direction == DirectionVertikal.UP && (currentValue >= targetValue))
+				|| (direction == DirectionVertikal.DOWN && (currentValue <= targetValue))) {
 			robot.stop_v();
 			direction = DirectionVertikal.NONE;
+		}
+	}
+
+	@Override
+	public void run() {
+		while (!Thread.currentThread().isInterrupted()) {
+			if (targetValue > currentValue && targetValue > currentValue + 2) {
+				direction = DirectionVertikal.UP;
+				robot.moveUp();
+			} else if (targetValue < currentValue && targetValue < currentValue - 2) {
+				direction = DirectionVertikal.DOWN;
+				robot.moveDown();
+			}
 		}
 	}
 

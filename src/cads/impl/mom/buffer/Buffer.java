@@ -6,7 +6,7 @@ import cads.impl.mom.IBuffer;
 
 public class Buffer<T> implements IBuffer<T> {
 
-	private static final int DEF_CAPACITY = 10;
+	private static final int DEF_CAPACITY = 1;
 	
 	private final int capacity;
 	private LinkedBlockingDeque<T> deque;
