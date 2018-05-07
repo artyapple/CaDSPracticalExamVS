@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Observer;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +12,7 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import cads.impl.app.server.listener.ObservableValue;
+import cads.impl.app.server.listener.ObservableValue.ValueType;
 import cads.impl.mom.MarshallingService;
 import cads.impl.mom.Watchdog;
 import cads.impl.mom.buffer.Message;
@@ -20,7 +22,7 @@ import cads.impl.os.UDPClient;
 public class WatchdogServerSide extends Watchdog {
 
 	private MarshallingService mas;
-	private ObservableValue<Boolean> connectionOk = new ObservableValue<Boolean>(Boolean.TRUE);
+	private ObservableValue<Boolean> connectionOk = new ObservableValue<Boolean>(Boolean.TRUE,ValueType.WATCHDOG);
 	private AtomicInteger seq = new AtomicInteger();
 
 	public WatchdogServerSide(String dest_ip, int dest_port, int local_port, int timeout)
@@ -49,6 +51,7 @@ public class WatchdogServerSide extends Watchdog {
 
 		try {
 			receiveData = server.receive();
+			//connectionOk.setValue(true); // reset?
 		} catch (Exception e) {
 			connectionOk.setValue(false);
 			Logger.getLogger(UDPClient.class.getName()).log(Level.SEVERE,
@@ -67,6 +70,10 @@ public class WatchdogServerSide extends Watchdog {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void registerObserver(Observer observer) {
+		connectionOk.addObserver(observer);
 	}
 
 }
