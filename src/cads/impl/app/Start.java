@@ -16,8 +16,11 @@ public class Start {
 
 		options.addOption("c", "client", false, "Start client");
 
-		Option server = OptionBuilder.withArgName("simulation or robot").hasArg().isRequired().withLongOpt("server")
-				.withDescription("Start server").create("s");
+		Option server = OptionBuilder.withArgName("simulation or robot")
+				.hasArg()
+				.withLongOpt("server")
+				.withDescription("Start server")
+				.create("s");
 		options.addOption(server);
 
 		options.addOption("p", "proxy", false, "Start proxy"); // TODO proxy not yet implemented
@@ -56,10 +59,11 @@ public class Start {
 			CommandLine commandLine = parser.parse(options, args);
 
 			// some test handling
-			/*
+			
 			System.out.println(commandLine.getOptionValue("c"));
 			System.out.println(commandLine.getOptionValue("s"));
 			System.out.println(commandLine.getOptionValue("sh"));
+			/*
 			for (String s : commandLine.getOptionValues("serverHost")) {
 				System.out.println(s);
 			}
