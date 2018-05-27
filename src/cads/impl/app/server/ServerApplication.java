@@ -98,7 +98,7 @@ public class ServerApplication {
 		RobotController gripperRobotController = new GripperRobotController(gripperBuffer, gmotor);
 		
 		
-		WatchdogServerSide w = new WatchdogServerSide("localhost", watchdogDestPort, watchdogLocalPort, 500);
+		WatchdogServerSide w = new WatchdogServerSide(clientHost, watchdogDestPort, watchdogLocalPort, 500);
 		w.registerObserver(vmotor);
 		w.registerObserver(hmotor);
 		w.registerObserver(gmotor);
