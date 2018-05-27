@@ -57,12 +57,12 @@ public class ServerApplication {
 		this.verticalPort = verticalPort;
 	}
 
-	public void setWatchdogLocalPort(int watchdogLocalPort) {
-		this.watchdogLocalPort = watchdogLocalPort;
+	public void setWatchdogLocalPort(String localPortString) {
+		this.watchdogLocalPort = Integer.getInteger(localPortString);
 	}
 
-	public void setWatchdogDestPort(int watchdogDestPort) {
-		this.watchdogDestPort = watchdogDestPort;
+	public void setWatchdogDestPort(String destPortString) {
+		this.watchdogDestPort = Integer.getInteger(destPortString);
 	}
 
 	public void nomain() throws JsonParseException, JsonMappingException, IOException {

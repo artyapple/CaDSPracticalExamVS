@@ -28,8 +28,6 @@ public class ClientApplication {
 	private int verticalPort = 8010;
 	private int watchdogLocalPort = 9001;
 	private int watchdogDestPort = 9000;
-	
-
 
 	public void setServerHost(String serverHost) {
 		this.serverHost = serverHost;
@@ -47,6 +45,14 @@ public class ClientApplication {
 		this.verticalPort = verticalPort;
 	}
 
+	public void setWatchdogLocalPort(String localPortString) {
+		this.watchdogLocalPort = Integer.getInteger(localPortString);
+	}
+
+	public void setWatchdogDestPort(String destPortString) {
+		this.watchdogDestPort = Integer.getInteger(destPortString);
+	}
+	
 	public void nomain()
 			throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
 
