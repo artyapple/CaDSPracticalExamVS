@@ -16,6 +16,7 @@ import org.apache.commons.cli.ParseException;
 import org.cads.ev3.middleware.CaDSEV3RobotType;
 
 import cads.impl.app.client.ClientApplication;
+import cads.impl.app.client.ConnectionConfig;
 import cads.impl.app.server.ServerApplication;
 
 public class Start {
@@ -110,29 +111,32 @@ public class Start {
 				// TODO start ClientApplication with parameters
 				ClientApplication clientApp = new ClientApplication();
 				if (commandLine.hasOption("serverHost")) {
-					String serverHost = commandLine.getOptionValue("serverHost");
-					clientApp.setServerHost(serverHost);
-				}
-				if (commandLine.hasOption("gripperPort")) {
-					int[] gripperPorts = stringToIntArray(commandLine.getOptionValues("gp"));
-					clientApp.setGripperPort(gripperPorts[0]);
-				}
-				if (commandLine.hasOption("horizontalPort")) {
-					int[] horizontalPorts = stringToIntArray(commandLine.getOptionValues("hp"));
-					clientApp.setHorizontalPort(horizontalPorts[0]);
-				}
-				if (commandLine.hasOption("verticalPort")) {
-					int[] verticalPorts = stringToIntArray(commandLine.getOptionValues("vp"));
-					clientApp.setVerticalPort(verticalPorts[0]);
-				}
-				if (commandLine.hasOption("serverHost")) {
-					// one host for now
-					String serverHost = commandLine.getOptionValue("serverHost");
-					clientApp.setServerHost(serverHost);
-				}
-				if (commandLine.hasOption("watchdogLocalPort") && commandLine.hasOption("watchdogDestPort")) {
-					clientApp.setWatchdogDestPort(commandLine.getOptionValue("wd"));
-					clientApp.setWatchdogLocalPort(commandLine.getOptionValue("wl"));
+//					String serverHost = commandLine.getOptionValue("serverHost");
+//					clientApp.setServerHost(serverHost);
+					
+					for (int i = 0; i < commandLine.getOptionValues("serverHost").length; i++) {
+						String host = commandLine.getOptionValues("serverHost")[i];
+						ConnectionConfig newConnection = new ConnectionConfig(host);
+					
+						if (commandLine.hasOption("gripperPort")) {
+							int[] gripperPorts = stringToIntArray(commandLine.getOptionValues("gp"));
+							newConnection.setGripperPort(gripperPorts[i]);
+						}
+						if (commandLine.hasOption("horizontalPort")) {
+							int[] horizontalPorts = stringToIntArray(commandLine.getOptionValues("hp"));
+							newConnection.setHorizontalPort(horizontalPorts[i]);
+						}
+						if (commandLine.hasOption("verticalPort")) {
+							int[] verticalPorts = stringToIntArray(commandLine.getOptionValues("vp"));
+							newConnection.setVerticalPort(verticalPorts[i]);
+						}
+						if (commandLine.hasOption("watchdogLocalPort") && commandLine.hasOption("watchdogDestPort")) {
+							newConnection.setWatchdogDestPort(commandLine.getOptionValues("wd")[i]);
+							newConnection.setWatchdogLocalPort(commandLine.getOptionValues("wl")[i]);
+						}
+						
+						clientApp.getConnections().add(newConnection);
+					}
 				}
 				try {
 					clientApp.nomain();

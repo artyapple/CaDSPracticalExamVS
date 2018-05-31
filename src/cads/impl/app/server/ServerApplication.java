@@ -70,9 +70,6 @@ public class ServerApplication {
 		RobotStatusListener statusListener = new RobotStatusListener();
 		CaDSEV3RobotHAL robot = CaDSEV3RobotHAL.createInstance(robotType, statusListener,
 				new FeedBackListener());
-
-		//horizontal
-				Buffer<Message> horizontalBuffer = new Buffer<>();
 		
 		VertikalMotor vmotor = new VertikalMotor();
 		statusListener.subscribe(ValueToObserve.VERTIKAL, vmotor);
@@ -87,7 +84,8 @@ public class ServerApplication {
 		Middleware vertikalMom = new ServerMiddleware(vertikalBuffer, vertikalServer);
 		RobotController vertikalRobotController = new VertikalRobotController(vertikalBuffer, vmotor);
 		
-		
+		//horizontal
+		Buffer<Message> horizontalBuffer = new Buffer<>();		
 		Server<String> horizontalServer = new UDPServer(horizontalPort);
 		Middleware horizontalMom = new ServerMiddleware(horizontalBuffer, horizontalServer);
 		RobotController horizontalRobotController = new HorizontalRobotController(horizontalBuffer, hmotor);
