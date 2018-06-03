@@ -6,8 +6,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UDPServer implements Server<String> {
 
@@ -59,6 +57,15 @@ public class UDPServer implements Server<String> {
 		this.serverSocket.setSoTimeout(timeout);
 	}
 
+	/**
+	 * 
+	 * @param socket
+	 * @throws SocketException
+	 */
+	public UDPServer(DatagramSocket socket) throws SocketException {
+		this.serverSocket = socket;
+	}
+	
 //	@Override
 //	public byte[] receive() throws IOException {
 //		System.out.println("server start");

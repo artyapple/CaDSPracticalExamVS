@@ -38,10 +38,10 @@ public class UDPClient implements Client<String> {
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dest_addr, dest_port);
 		try {
 			clientSocket.send(sendPacket);
-			Logger.getLogger(UDPClient.class.getName()).log(Level.INFO, "Send message successfully:\n" + getInfo());
+			Logger.getLogger(UDPClient.class.getName()).log(Level.INFO, "Send message successfully:\n" + msg);
 		} catch (IOException e) {
 			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
-					"Send message failed:\n" + getInfo() + "\n" + msg, e);
+					"Send message failed:\n" + msg, e);
 		}
 	}
 	
@@ -50,8 +50,8 @@ public class UDPClient implements Client<String> {
 		clientSocket.close();
 	}
 
-	private String getInfo() {
-		StringBuilder info = new StringBuilder("Client - IP:");
-		return info.append(clientSocket.getInetAddress() + ":" + clientSocket.getPort()).toString();
+	@Override
+	public DatagramSocket getSocket() {
+		return clientSocket;
 	}
 }

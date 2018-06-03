@@ -1,0 +1,79 @@
+{
+	"alias": "iRobot_from_berlin",
+	"services": [
+		{
+			"alias": "GrabService1",
+			"port": 8585,
+			"serviceName": "IGripperMotor",
+			"description": "I can Grab service",
+			"isGenerateable": "true",
+			"functions": [
+				{
+					"name": "grab",
+					"returnType": "void",
+					"parameters": [
+						{
+							"type": "boolean",
+							"name": "toClose",
+							"value": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"alias": "HorizontalMoveService1",
+			"port": 8686,
+			"serviceName": "IHorizontalMotor",
+			"description": "I can HorizontalMotor service",
+			"isGenerateable": "true",
+			"functions": [
+				{
+					"name": "move",
+					"returnType": "void",
+					"parameters": [
+						{
+							"type": "int",
+							"name": "percent",
+							"value": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"alias": "VerticalMoveService1",
+			"port": 8787,
+			"serviceName": "IVertikalMotor",
+			"description": "I can VerticalMotor service",
+			"isGenerateable": "true",
+			"functions": [
+				{
+					"name": "move",
+					"returnType": "void",
+					"parameters": [
+						{
+							"type": "int",
+							"name": "percent",
+							"value": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"alias": "StatusService1",
+			"port": 8888,
+			"serviceName": "IGripperStatus",
+			"description": "I can get status",
+			"isGenerateable": "false",
+			"functions": [
+				{
+					"name": "getStatus",
+					"returnType": "Status",
+					"parameters": []
+				}
+			]
+		}
+	]
+}

@@ -1,24 +1,29 @@
 package cads.impl.mom.middleware;
 
+import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import cads.impl.mom.IBuffer;
 import cads.impl.mom.Middleware;
-import cads.impl.mom.buffer.Message;
 import cads.impl.os.Client;
+import cads.impl.os.UDPClient;
 
 public class ClientMiddleware extends Middleware {
 
 	private Client<String> client;
 
-	public ClientMiddleware(IBuffer<Message> buffer, Client<String> client)
+	public ClientMiddleware(IBuffer<String> buffer, Client<String> client)
 			throws SocketException, UnknownHostException {
 		super(buffer);
 		this.client = client;
+		new Thread(this).start();
+	}
+	
+	public ClientMiddleware(int targetPort, String targetIp, IBuffer<String> buffer)
+			throws SocketException, UnknownHostException {
+		super(buffer);
+		this.client = new UDPClient(targetIp, targetPort);
 		new Thread(this).start();
 	}
 
@@ -31,17 +36,12 @@ public class ClientMiddleware extends Middleware {
 
 	public synchronized void sendNextMessage() {
 		
-		Message message = buffer.getLast();
-
-		message.setSeqId(seq.incrementAndGet());
-		String serMsg = null;
-		try {
-			serMsg = ms.serialize(message);
-		} catch (JsonProcessingException e) {
-			Logger.getLogger(ClientMiddleware.class.getName()).log(Level.WARNING, "Serialization failed. Message id:"
-					+ message.getSeqId() + "; type: " + message.getType() + "; value" + message.getValue());
-		}
-		client.send(serMsg);
+		String message = buffer.getLast();
+		client.send(message);
+	}
+	
+	public DatagramSocket getSocket(){
+		return client.getSocket();
 	}
 
 }

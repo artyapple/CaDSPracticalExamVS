@@ -1,4 +1,4 @@
-package cads.impl.hal.server;
+ package cads.impl.hal.server;
 
 import java.util.Observable;
 import java.util.Observer;

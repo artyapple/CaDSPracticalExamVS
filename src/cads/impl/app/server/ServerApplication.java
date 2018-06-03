@@ -36,7 +36,7 @@ public class ServerApplication {
 	private int watchdogLocalPort = 9000;
 	private int watchdogDestPort = 9001;
 	private CaDSEV3RobotType robotType = CaDSEV3RobotType.SIMULATION;
-	
+
 	public void setRobotType(CaDSEV3RobotType robotType) {
 		this.robotType = robotType;
 	}
@@ -68,102 +68,109 @@ public class ServerApplication {
 	public void nomain() throws JsonParseException, JsonMappingException, IOException {
 
 		RobotStatusListener statusListener = new RobotStatusListener();
-		CaDSEV3RobotHAL robot = CaDSEV3RobotHAL.createInstance(robotType, statusListener,
-				new FeedBackListener());
+		CaDSEV3RobotHAL robot = CaDSEV3RobotHAL.createInstance(robotType, statusListener, new FeedBackListener());
 
-		//horizontal
-				Buffer<Message> horizontalBuffer = new Buffer<>();
-		
+		// horizontal
+		Buffer<Message> horizontalBuffer = new Buffer<>();
+
 		VertikalMotor vmotor = new VertikalMotor();
 		statusListener.subscribe(ValueToObserve.VERTIKAL, vmotor);
 		HorizontalMotor hmotor = new HorizontalMotor();
 		statusListener.subscribe(ValueToObserve.HORIZONTAL, hmotor);
 		GripperMotor gmotor = new GripperMotor();
 		statusListener.subscribe(ValueToObserve.GRIPPER, gmotor);
-		
+
 		// vertikal
 		Buffer<Message> vertikalBuffer = new Buffer<>();
 		Server<String> vertikalServer = new UDPServer(verticalPort);
 		Middleware vertikalMom = new ServerMiddleware(vertikalBuffer, vertikalServer);
 		RobotController vertikalRobotController = new VertikalRobotController(vertikalBuffer, vmotor);
-		
-		
+
 		Server<String> horizontalServer = new UDPServer(horizontalPort);
 		Middleware horizontalMom = new ServerMiddleware(horizontalBuffer, horizontalServer);
 		RobotController horizontalRobotController = new HorizontalRobotController(horizontalBuffer, hmotor);
-		
+
 		Buffer<Message> gripperBuffer = new Buffer<>();
 		Server<String> gripperServer = new UDPServer(gripperPort);
 		Middleware gripperMom = new ServerMiddleware(gripperBuffer, gripperServer);
 		RobotController gripperRobotController = new GripperRobotController(gripperBuffer, gmotor);
-		
-		
+
 		WatchdogServerSide w = new WatchdogServerSide(clientHost, watchdogDestPort, watchdogLocalPort, 500);
 		w.registerObserver(vmotor);
 		w.registerObserver(hmotor);
 		w.registerObserver(gmotor);
-		
+
 		// start threads
 		new Thread(vertikalMom).start();
 		new Thread(vertikalRobotController).start();
-		
+
 		new Thread(horizontalMom).start();
 		new Thread(horizontalRobotController).start();
-		
+
 		new Thread(gripperMom).start();
 		new Thread(gripperRobotController).start();
-		
+
 		new Thread(w).start();
 	}
-	
-//	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
-//
-//		RobotStatusListener statusListener = new RobotStatusListener();
-//		CaDSEV3RobotHAL robot = CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION, statusListener,
-//				new FeedBackListener());
-//
-//		//horizontal
-//				Buffer<Message> horizontalBuffer = new Buffer<>();
-//		
-//		VertikalMotor vmotor = new VertikalMotor();
-//		statusListener.subscribe(ValueToObserve.VERTIKAL, vmotor);
-//		HorizontalMotor hmotor = new HorizontalMotor();
-//		statusListener.subscribe(ValueToObserve.HORIZONTAL, hmotor);
-//		GripperMotor gmotor = new GripperMotor();
-//		statusListener.subscribe(ValueToObserve.GRIPPER, gmotor);
-//		
-//		// vertikal
-//		Buffer<Message> vertikalBuffer = new Buffer<>();
-//		Server<String> vertikalServer = new UDPServer(8010);
-//		Middleware vertikalMom = new ServerMiddleware(vertikalBuffer, vertikalServer);
-//		RobotController vertikalRobotController = new VertikalRobotController(vertikalBuffer, vmotor);
-//		
-//		
-//		Server<String> horizontalServer = new UDPServer(8011);
-//		Middleware horizontalMom = new ServerMiddleware(horizontalBuffer, horizontalServer);
-//		RobotController horizontalRobotController = new HorizontalRobotController(horizontalBuffer, hmotor);
-//		
-//		Buffer<Message> gripperBuffer = new Buffer<>();
-//		Server<String> gripperServer = new UDPServer(8012);
-//		Middleware gripperMom = new ServerMiddleware(gripperBuffer, gripperServer);
-//		RobotController gripperRobotController = new GripperRobotController(gripperBuffer, gmotor);
-//		
-//		
-//		WatchdogServerSide w = new WatchdogServerSide("localhost", 9000, 9001, 500);
-//		w.registerObserver(vmotor);
-//		w.registerObserver(hmotor);
-//		w.registerObserver(gmotor);
-//		
-//		// start threads
-//		new Thread(vertikalMom).start();
-//		new Thread(vertikalRobotController).start();
-//		
-//		new Thread(horizontalMom).start();
-//		new Thread(horizontalRobotController).start();
-//		
-//		new Thread(gripperMom).start();
-//		new Thread(gripperRobotController).start();
-//		
-//		new Thread(w).start();
-//	}
+
+	// public static void main(String[] args) throws JsonParseException,
+	// JsonMappingException, IOException {
+	//
+	// RobotStatusListener statusListener = new RobotStatusListener();
+	// CaDSEV3RobotHAL robot =
+	// CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION,
+	// statusListener,
+	// new FeedBackListener());
+	//
+	// //horizontal
+	// Buffer<Message> horizontalBuffer = new Buffer<>();
+	//
+	// VertikalMotor vmotor = new VertikalMotor();
+	// statusListener.subscribe(ValueToObserve.VERTIKAL, vmotor);
+	// HorizontalMotor hmotor = new HorizontalMotor();
+	// statusListener.subscribe(ValueToObserve.HORIZONTAL, hmotor);
+	// GripperMotor gmotor = new GripperMotor();
+	// statusListener.subscribe(ValueToObserve.GRIPPER, gmotor);
+	//
+	// // vertikal
+	// Buffer<Message> vertikalBuffer = new Buffer<>();
+	// Server<String> vertikalServer = new UDPServer(8010);
+	// Middleware vertikalMom = new ServerMiddleware(vertikalBuffer,
+	// vertikalServer);
+	// RobotController vertikalRobotController = new
+	// VertikalRobotController(vertikalBuffer, vmotor);
+	//
+	//
+	// Server<String> horizontalServer = new UDPServer(8011);
+	// Middleware horizontalMom = new ServerMiddleware(horizontalBuffer,
+	// horizontalServer);
+	// RobotController horizontalRobotController = new
+	// HorizontalRobotController(horizontalBuffer, hmotor);
+	//
+	// Buffer<Message> gripperBuffer = new Buffer<>();
+	// Server<String> gripperServer = new UDPServer(8012);
+	// Middleware gripperMom = new ServerMiddleware(gripperBuffer,
+	// gripperServer);
+	// RobotController gripperRobotController = new
+	// GripperRobotController(gripperBuffer, gmotor);
+	//
+	//
+	// WatchdogServerSide w = new WatchdogServerSide("localhost", 9000, 9001,
+	// 500);
+	// w.registerObserver(vmotor);
+	// w.registerObserver(hmotor);
+	// w.registerObserver(gmotor);
+	//
+	// // start threads
+	// new Thread(vertikalMom).start();
+	// new Thread(vertikalRobotController).start();
+	//
+	// new Thread(horizontalMom).start();
+	// new Thread(horizontalRobotController).start();
+	//
+	// new Thread(gripperMom).start();
+	// new Thread(gripperRobotController).start();
+	//
+	// new Thread(w).start();
+	// }
 }

@@ -2,22 +2,32 @@ package cads.impl.app.client.gui;
 
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveGripper;
 
+import cads.impl.factory.Factory;
 import cads.impl.hal.IGripperMotor;
-import cads.impl.hal.client.GripperMotor;
-import cads.impl.mom.IBuffer;
-import cads.impl.mom.buffer.Message;
 
 public class GripperMoveGuiController implements IIDLCaDSEV3RMIMoveGripper {
 
-	private IGripperMotor gripperMotor;
-	
-	public GripperMoveGuiController(IBuffer<Message> buffer) {
-		this.gripperMotor = new GripperMotor(buffer);
+	private Factory factory;
+	private RobotManager manager;
+
+	public GripperMoveGuiController() throws InstantiationException, IllegalAccessException {
+		factory = Factory.current();
+		manager = factory.getInstance(RobotManager.class);
 	}
 
 	@Override
-	public int closeGripper(int arg0) throws Exception {
-		gripperMotor.open(Boolean.FALSE);
+	public int closeGripper(int transactionID) throws Exception {
+		IGripperMotor gripper = getCurrent();
+		gripper.grab(true);
+		System.out.println("close.... TID: " + transactionID);
+		return 0;
+	}
+
+	@Override
+	public int openGripper(int transactionID) throws Exception {
+		IGripperMotor gripper = getCurrent();
+		gripper.grab(false);
+		System.out.println("open.... TID: " + transactionID);
 		return 0;
 	}
 
@@ -25,11 +35,9 @@ public class GripperMoveGuiController implements IIDLCaDSEV3RMIMoveGripper {
 	public int isGripperClosed() throws Exception {
 		return 0;
 	}
-
-	@Override
-	public int openGripper(int arg0) throws Exception {
-		gripperMotor.open(Boolean.TRUE);
-		return 0;
+	
+	private IGripperMotor getCurrent() throws InstantiationException, IllegalAccessException{
+		System.out.println("IGripperMotor" + manager.getCurrent());
+		return factory.getInstance("IGripperMotor" + manager.getCurrent());
 	}
-
 }

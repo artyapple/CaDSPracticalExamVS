@@ -10,5 +10,5 @@ public interface IGripperMotor {
 	 * opens gripper if value true, otherwise closes
 	 * @param value
 	 */
-	public void open(boolean value);
+	public void grab(boolean value);
 }

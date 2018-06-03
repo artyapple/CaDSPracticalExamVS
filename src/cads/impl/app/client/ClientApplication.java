@@ -1,118 +1,141 @@
 package cads.impl.app.client;
 
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.IOException;
 
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.cads.ev3.gui.swing.CaDSRobotGUISwing;
-import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveGripper;
-import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveHorizontal;
-import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveVertical;
 
+import cads.impl.FactoryConfig;
+import cads.impl.app.client.gui.ConsumerGuiController;
 import cads.impl.app.client.gui.GripperMoveGuiController;
 import cads.impl.app.client.gui.HorizontalMoveGuiController;
+import cads.impl.app.client.gui.RobotManager;
 import cads.impl.app.client.gui.VerticalMoveGuiController;
-import cads.impl.mom.IBuffer;
-import cads.impl.mom.Middleware;
-import cads.impl.mom.buffer.Buffer;
-import cads.impl.mom.buffer.Message;
-import cads.impl.mom.middleware.ClientMiddleware;
-import cads.impl.mom.watchdog.WatchdogClientSide;
-import cads.impl.os.Client;
-import cads.impl.os.UDPClient;
+import cads.impl.factory.Factory;
+import cads.impl.rpc.configuration.ProvidersConfiguration;
+import cads.impl.rpc.consumer.ConsumerControllingServiceIGripperMotor;
+import cads.impl.rpc.consumer.ConsumerControllingServiceIHorizontalMotor;
+import cads.impl.rpc.consumer.ConsumerControllingServiceIVertikalMotor;
+import cads.impl.rpc.consumer.ServicesConfigurationProvider;
+import cads.impl.rpc.data.Provider;
+import cads.impl.rpc.data.Service;
 
 public class ClientApplication {
 
-	private String serverHost = "localhost";
-	private int gripperPort = 8012;
-	private int horizontalPort = 8011;
-	private int verticalPort = 8010;
-	private int watchdogLocalPort = 9001;
-	private int watchdogDestPort = 9000;
+	private boolean isMock = false;
+	private String brokerHost = "127.0.0.1";
+	private int brokerPort = 4001;
 
-	public void setServerHost(String serverHost) {
-		this.serverHost = serverHost;
+	public static void main(String[] args)
+			throws InstantiationException, IllegalAccessException, IOException, ClassNotFoundException {
+		new ClientApplication().startup(args);
 	}
 
-	public void setGripperPort(int gripperPort) {
-		this.gripperPort = gripperPort;
+	public void startup(String[] args)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+
+		FactoryConfig.registerTypesForClient();
+		handleProgramArguments(args);
+
+		ProvidersConfiguration providersConfiguration = new ServicesConfigurationProvider()
+				.getProviderConfiguration(isMock, brokerHost, brokerPort);
+
+		configurateClient(brokerHost, providersConfiguration);
 	}
 
-	public void setHorizontalPort(int horizontalPort) {
-		this.horizontalPort = horizontalPort;
-	}
+	private void handleProgramArguments(String[] args) {
+		Options options = new Options();
+		OptionBuilder.withArgName("simulation or robot").hasArg();
+		Option port = OptionBuilder.withLongOpt("port").withDescription("Broker port").create("p");
+		options.addOption(port);
+		Option ip = OptionBuilder.withLongOpt("ip").withDescription("Broker IP").create("ip");
+		options.addOption(ip);
+		Option mock = OptionBuilder.withLongOpt("mock").withDescription("Broker mock").create("m");
+		options.addOption(mock);
 
-	public void setVerticalPort(int verticalPort) {
-		this.verticalPort = verticalPort;
-	}
-
-	public void setWatchdogLocalPort(String localPortString) {
-		this.watchdogLocalPort = Integer.getInteger(localPortString);
-	}
-
-	public void setWatchdogDestPort(String destPortString) {
-		this.watchdogDestPort = Integer.getInteger(destPortString);
-	}
-	
-	public void nomain()
-			throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
-
-		IBuffer<Message> vertikalBuffer = new Buffer<>();
-		Client<String> vertikalUpd = new UDPClient(serverHost, verticalPort);		
-		IIDLCaDSEV3RMIMoveVertical vertikal = new VerticalMoveGuiController(vertikalBuffer);
-		Middleware vertikalMom = new ClientMiddleware(vertikalBuffer, vertikalUpd);
-
-		IBuffer<Message> horizontalBuffer = new Buffer<>();
-		Client<String> horizontalUdp = new UDPClient(serverHost, horizontalPort);
-		IIDLCaDSEV3RMIMoveHorizontal horizontal = new HorizontalMoveGuiController(horizontalBuffer);
-		Middleware horizontalMom = new ClientMiddleware(horizontalBuffer, horizontalUdp);
-
-		IBuffer<Message> gripperBuffer = new Buffer<>();
-		Client<String> gripperUdp = new UDPClient(serverHost, gripperPort);
-		IIDLCaDSEV3RMIMoveGripper gripper = new GripperMoveGuiController(gripperBuffer);
-		Middleware gripperMom = new ClientMiddleware(gripperBuffer, gripperUdp);
+		CommandLineParser parser = new BasicParser();
+		HelpFormatter formatter = new HelpFormatter();
+		CommandLine cmd;
 		
-		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(null, gripper, vertikal, horizontal, null);
-		
-		new Thread(vertikalMom).start();
-		new Thread(horizontalMom).start();
-		new Thread(gripperMom).start();
-		
-		// Watchdog
-		WatchdogClientSide w = new WatchdogClientSide(serverHost, watchdogDestPort, watchdogLocalPort);
-		
-		new Thread(w).start();;
+		try {
+			cmd = parser.parse(options, args);
+			isMock = cmd.hasOption("mock");	
+			brokerHost= cmd.getOptionValue("ip", brokerHost);
+			brokerPort= Integer.parseInt(cmd.getOptionValue("port", "4001"));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			formatter.printHelp("consumer", options);
+			System.exit(1);
+            return;
+		}
 
 	}
-	
-//	public static void main(String[] args)
-//	throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
-//
-//IBuffer<Message> vertikalBuffer = new Buffer<>();
-//Client<String> vertikalUpd = new UDPClient("localhost", 8010);		
-//IIDLCaDSEV3RMIMoveVertical vertikal = new VerticalMoveGuiController(vertikalBuffer);
-//Middleware vertikalMom = new ClientMiddleware(vertikalBuffer, vertikalUpd);
-//
-//IBuffer<Message> horizontalBuffer = new Buffer<>();
-//Client<String> horizontalUdp = new UDPClient("localhost", 8011);
-//IIDLCaDSEV3RMIMoveHorizontal horizontal = new HorizontalMoveGuiController(horizontalBuffer);
-//Middleware horizontalMom = new ClientMiddleware(horizontalBuffer, horizontalUdp);
-//
-//IBuffer<Message> gripperBuffer = new Buffer<>();
-//Client<String> gripperUdp = new UDPClient("localhost", 8012);
-//IIDLCaDSEV3RMIMoveGripper gripper = new GripperMoveGuiController(gripperBuffer);
-//Middleware gripperMom = new ClientMiddleware(gripperBuffer, gripperUdp);
-//
-//CaDSRobotGUISwing gui = new CaDSRobotGUISwing(null, gripper, vertikal, horizontal, null);
-//
-//new Thread(vertikalMom).start();
-//new Thread(horizontalMom).start();
-//new Thread(gripperMom).start();
-//
-//// Watchdog
-//WatchdogClientSide w = new WatchdogClientSide("localhost", 9001, 9000);
-//
-//new Thread(w).start();;
-//
-//}
-	
+
+	private void configurateClient(String brokerIp, ProvidersConfiguration providersConfiguration)
+			throws InstantiationException, IllegalAccessException, IOException, ClassNotFoundException {
+
+		Factory factory = Factory.current();
+
+		// default provider for GUI status listener
+		if (providersConfiguration.getProviders().size() > 0) {
+			RobotManager manager = factory.getInstance(RobotManager.class);
+			manager.setCurrent(providersConfiguration.getProviders().get(0).getAlias());
+		}
+
+		// create handlers for all exiting providers
+		for (Provider provider : providersConfiguration.getProviders()) {
+			for (Service service : provider.getServices()) {
+				Object controllingService = null;
+				switch (service.getServiceName()) {
+				case "IGripperMotor":
+					controllingService = new ConsumerControllingServiceIGripperMotor(service.getPort(), brokerIp);
+					break;
+				case "IHorizontalMotor":
+					controllingService = new ConsumerControllingServiceIHorizontalMotor(service.getPort(), brokerIp);
+					break;
+				case "IVertikalMotor":
+					controllingService = new ConsumerControllingServiceIVertikalMotor(service.getPort(), brokerIp);
+					break;
+				default:
+					System.out.println("Discoveried service " + service.getServiceName() + " is not supported");
+					break;
+				}
+				if (controllingService != null) {
+					factory.registerInstance(controllingService, service.getServiceName() + provider.getAlias());
+				}
+			}
+		}
+
+		// initialize client GUI
+		GripperMoveGuiController grabController = new GripperMoveGuiController();
+		VerticalMoveGuiController verticalMovingController = new VerticalMoveGuiController();
+		HorizontalMoveGuiController horizontalMovingController = new HorizontalMoveGuiController();
+		ConsumerGuiController consumerGui = new ConsumerGuiController();
+		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(consumerGui, grabController, verticalMovingController,
+				horizontalMovingController, null);
+		factory.registerInstance(gui, CaDSRobotGUISwing.class);
+
+		// TODO maybe later, not prio 1
+		// ConsumerStatusGuiController statusGuiController = new
+		// ConsumerStatusGuiController();
+		// new Thread(statusGuiController).start();
+
+		// TODO: reg ister each provider in GUI to be able to switch between
+		// them
+		for (Provider provider : providersConfiguration.getProviders()) {
+			gui.addService(provider.getAlias());
+			// TODO: and realize status controller (with receiver) via broker
+			// factory.registerType(StatusReceiverBuffer.class);
+			// StatusGuiController statusController = new StatusGuiController();
+			// new Thread(statusController).start();
+		}
+	}
 }
