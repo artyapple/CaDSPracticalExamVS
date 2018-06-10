@@ -1,4 +1,4 @@
- package cads.impl.hal.server;
+package cads.impl.hal.server;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -6,65 +6,94 @@ import java.util.Observer;
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 
 import cads.impl.app.server.listener.ObservableValue;
-import cads.impl.app.server.listener.ObservableValue.ValueType;
+import cads.impl.factory.Factory;
 import cads.impl.hal.IHorizontalMotor;
-import cads.impl.mom.IBuffer;
-import cads.impl.mom.buffer.Message;
 
-public class HorizontalMotor implements IHorizontalMotor, Observer, Runnable {
+public class HorizontalMotor implements IHorizontalMotor, Observer {
 
 	private enum DirectionHorizonal {
 		LEFT, RIGHT, NONE
 	}
 
-	private volatile boolean eStop = false;
-	
 	private CaDSEV3RobotHAL robot;
 	private int currentValue;
-	private volatile int targetValue;
+	private int targetValue;
 	private DirectionHorizonal direction;
 
-	public HorizontalMotor() {
-		this.robot = CaDSEV3RobotHAL.getInstance();
+	public HorizontalMotor() throws InstantiationException, IllegalAccessException {
+		this.robot = Factory.current().getInstance(CaDSEV3RobotHAL.class);
+		this.direction = DirectionHorizonal.NONE;
+		new Thread(new HRMotor()).start();
 	}
 
 	@Override
 	public void move(int value) {
 		targetValue = value;
+		if (targetValue > currentValue || targetValue > currentValue + 1) {
+			setMovingDirection(DirectionHorizonal.LEFT);
+		} else if (targetValue < currentValue || targetValue < currentValue - 1) {
+			setMovingDirection(DirectionHorizonal.RIGHT);
+		} else {
+			setMovingDirection(DirectionHorizonal.NONE);
+		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void update(Observable o, Object arg) {
+		System.out.println("motor update");
 		ObservableValue preCast = (ObservableValue) o;
-		if (preCast.getValueType() == ValueType.HORIZONTAL) {
-			ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;
 
-			currentValue = currentObservable.getValue();
-			if ((direction == DirectionHorizonal.LEFT && currentValue >= targetValue)
-					|| (direction == DirectionHorizonal.RIGHT && currentValue <= targetValue)) {
-				robot.stop_h();
-				direction = DirectionHorizonal.NONE;
+		ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;
+		currentValue = currentObservable.getValue();
+		if ((direction == DirectionHorizonal.LEFT && currentValue >= targetValue)
+				|| (direction == DirectionHorizonal.RIGHT && currentValue <= targetValue)) {
+			setMovingDirection(DirectionHorizonal.NONE);
+		}
+
+	}
+
+	private synchronized DirectionHorizonal getMovingDirection() {
+		while (direction == DirectionHorizonal.NONE) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		} else if (preCast.getValueType() == ValueType.WATCHDOG) {
-			ObservableValue<Boolean> currentBooleanObservable = (ObservableValue<Boolean>) preCast;
-			if (currentBooleanObservable.getValue() == false) {
-				Thread.currentThread().interrupt();
+		}
+		return direction;
+	}
+
+	private synchronized void setMovingDirection(DirectionHorizonal dir) {
+		if (direction != dir || dir == DirectionHorizonal.NONE) {
+			robot.stop_h();
+		}
+		direction = dir;
+		notify();
+	}
+	
+	private void moveLeft(){
+		robot.moveLeft();
+	}
+	private void moveRight(){
+		robot.moveRight();
+	}
+	class HRMotor implements Runnable {
+		@Override
+		public void run() {
+			while (true) {
+				System.out.println("motor running");
+				switch (getMovingDirection()) {
+				case LEFT:
+					moveLeft();
+					break;
+				case RIGHT:
+					moveRight();
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}
-
-	@Override
-	public void run() {
-		while(!Thread.currentThread().isInterrupted()){
-			if (targetValue > currentValue && targetValue > currentValue+2) {
-				direction = DirectionHorizonal.LEFT;
-				robot.moveLeft();
-			} else if (targetValue < currentValue && targetValue < currentValue-2) {
-				direction = DirectionHorizonal.RIGHT;
-				robot.moveRight();
-			}
-		}	
-	}
-
 }

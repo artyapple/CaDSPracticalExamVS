@@ -6,10 +6,10 @@ import java.util.Observer;
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 
 import cads.impl.app.server.listener.ObservableValue;
-import cads.impl.app.server.listener.ObservableValue.ValueType;
+import cads.impl.factory.Factory;
 import cads.impl.hal.IVertikalMotor;
 
-public class VertikalMotor implements IVertikalMotor, Observer, Runnable {
+public class VertikalMotor implements IVertikalMotor, Observer{
 
 	private enum DirectionVertikal {
 		UP, DOWN, NONE
@@ -20,50 +20,80 @@ public class VertikalMotor implements IVertikalMotor, Observer, Runnable {
 	private volatile int targetValue;
 	private DirectionVertikal direction;
 
-	private volatile boolean eStop = false;
-
-	public VertikalMotor() {
-		this.robot = CaDSEV3RobotHAL.getInstance();
+	public VertikalMotor() throws InstantiationException, IllegalAccessException {
+		this.robot = Factory.current().getInstance(CaDSEV3RobotHAL.class);
+		this.direction = DirectionVertikal.NONE;
+		new Thread(new VRMotor()).start();
 	}
 
+	
 	@Override
 	public void move(int value) {
 		targetValue = value;
+		if (targetValue > currentValue || targetValue > currentValue + 1) {
+			setMovingDirection(DirectionVertikal.UP);
+		} else if (targetValue < currentValue || targetValue < currentValue - 1) {
+			setMovingDirection(DirectionVertikal.DOWN);
+		} else {
+			setMovingDirection(DirectionVertikal.NONE);
+		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void update(Observable o, Object arg) {
-
+		System.out.println("motor update");
 		ObservableValue preCast = (ObservableValue) o;
-		if (preCast.getValueType() == ValueType.VERTIKAL) {
-			ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;
 
-			currentValue = currentObservable.getValue();
-
-			if ((direction == DirectionVertikal.UP && currentValue >= targetValue)
-					|| (direction == DirectionVertikal.DOWN && currentValue <= targetValue)) {
-				robot.stop_v();
-				direction = DirectionVertikal.NONE;
-			}
-
-		} else if (preCast.getValueType() == ValueType.WATCHDOG) {
-			ObservableValue<Boolean> currentBooleanObservable = (ObservableValue<Boolean>) preCast;
-			if (currentBooleanObservable.getValue() == false) {
-				Thread.currentThread().interrupt();
-			}
+		ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;
+		currentValue = currentObservable.getValue();
+		if ((direction == DirectionVertikal.UP && currentValue >= targetValue)
+				|| (direction == DirectionVertikal.DOWN && currentValue <= targetValue)) {
+			setMovingDirection(DirectionVertikal.NONE);
 		}
+
 	}
 
-	@Override
-	public void run() {
-		while (!Thread.currentThread().isInterrupted()) {
-			if (targetValue > currentValue && targetValue > currentValue + 2) {
-				direction = DirectionVertikal.UP;
-				robot.moveUp();
-			} else if (targetValue < currentValue && targetValue < currentValue - 2) {
-				direction = DirectionVertikal.DOWN;
-				robot.moveDown();
+	private synchronized DirectionVertikal getMovingDirection() {
+		while (direction == DirectionVertikal.NONE) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return direction;
+	}
+
+	private synchronized void setMovingDirection(DirectionVertikal dir) {
+		if (direction != dir || dir == DirectionVertikal.NONE) {
+			robot.stop_v();
+		}
+		direction = dir;
+		notify();
+	}
+	
+	private void moveUp(){
+		robot.moveUp();
+	}
+	private void moveDown(){
+		robot.moveDown();
+	}
+	class VRMotor implements Runnable {
+		@Override
+		public void run() {
+			while (true) {
+				System.out.println("motor running");
+				switch (getMovingDirection()) {
+				case UP:
+					moveUp();
+					break;
+				case DOWN:
+					moveDown();
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}

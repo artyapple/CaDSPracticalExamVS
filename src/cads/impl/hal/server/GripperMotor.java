@@ -2,15 +2,13 @@ package cads.impl.hal.server;
 
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 
 import cads.impl.app.server.listener.ObservableValue;
 import cads.impl.app.server.listener.ObservableValue.ValueType;
+import cads.impl.factory.Factory;
 import cads.impl.hal.IGripperMotor;
-import cads.impl.os.UDPClient;
 
 public class GripperMotor implements IGripperMotor, Observer {
 
@@ -19,21 +17,16 @@ public class GripperMotor implements IGripperMotor, Observer {
 
 	private volatile boolean eStop = false;
 
-	public GripperMotor() {
-		this.robot = CaDSEV3RobotHAL.getInstance();
+	public GripperMotor() throws InstantiationException, IllegalAccessException {
+		this.robot = Factory.current().getInstance(CaDSEV3RobotHAL.class);
 	}
 
 	@Override
-	public void open(boolean value) {
-		if (currentValue != value) {
-			if (value) {
-				robot.doOpen();
-			} else {
-				robot.doClose();
-			}
+	public void grab(boolean toClose) {
+		if (toClose) {
+			robot.doClose();
 		} else {
-			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING,
-					"The Gripper is already " + (value ? "open" : "closed") + ". Ignore command.");
+			robot.doOpen();
 		}
 	}
 

@@ -54,7 +54,7 @@ public class Buffer<T> implements IBuffer<T> {
 			}
 		}
 		empty = true;
-		notifyAll();
+		//notifyAll();
 
 		return deque.pollFirst();
 
@@ -84,5 +84,19 @@ public class Buffer<T> implements IBuffer<T> {
 	@Override
 	public synchronized int size(){
 		return deque.size();
+	}
+	@Override
+	public T getFirst() {
+		while (empty == true) { // wait till something appears in the buffer
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
+		empty = true;
+		//notifyAll();
+
+		T element = deque.pollLast();
+		return element;
 	}
 }

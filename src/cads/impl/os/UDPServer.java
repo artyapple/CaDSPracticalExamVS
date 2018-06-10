@@ -106,8 +106,4 @@ public class UDPServer implements Server<String> {
 		serverSocket.close();
 	}
 
-	private String getInfo() {
-		StringBuilder info = new StringBuilder("Server - IP:");
-		return info.append(serverSocket.getInetAddress() + ":" + serverSocket.getPort()).toString();
-	}
 }

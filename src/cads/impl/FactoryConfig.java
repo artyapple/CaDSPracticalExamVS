@@ -1,5 +1,7 @@
 package cads.impl;
 
+import cads.impl.app.broker.data.RegisteredProviders;
+import cads.impl.app.broker.forward.ForwardingService;
 import cads.impl.app.client.gui.RobotManager;
 import cads.impl.factory.Factory;
 //import cads.impl.mom.communication.buffer.StatusSenderBuffer;
@@ -17,21 +19,21 @@ public class FactoryConfig {
 		fac.registerType(MarshallingService.class);
 	}
 
-//	public static void registerTypesForBrocker() {
-//		registerTypes();
+	public static void registerTypesForBrocker() {
+		registerTypes();
+
+		Factory fac = Factory.current();
+		fac.registerType(ForwardingService.class);
+		fac.registerType(RegisteredProviders.class);
+	}
 //
-//		Factory fac = Factory.current();
-//		fac.registerType(ForwardingService.class);
-//		fac.registerType(RegisteredProviders.class);
-//	}
-//
-//	public static void registerTypesForService() {
-//		registerTypes();
-//
-//		Factory fac = Factory.current();
-//		fac.registerType(StatusSenderBuffer.class);
-//		fac.registerType(FullStatus.class);
-//	}
+	public static void registerTypesForService() {
+		registerTypes();
+
+		Factory fac = Factory.current();
+		//fac.registerType(StatusSenderBuffer.class);
+		//fac.registerType(FullStatus.class);
+	}
 
 	public static void registerTypesForClient() {
 		registerTypes();

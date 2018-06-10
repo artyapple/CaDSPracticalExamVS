@@ -60,20 +60,7 @@
 					]
 				}
 			]
-		},
-		{
-			"alias": "StatusService1",
-			"port": 8888,
-			"serviceName": "IGripperStatus",
-			"description": "I can get status",
-			"isGenerateable": "false",
-			"functions": [
-				{
-					"name": "getStatus",
-					"returnType": "Status",
-					"parameters": []
-				}
-			]
 		}
+		
 	]
 }

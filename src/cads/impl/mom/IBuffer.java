@@ -13,6 +13,11 @@ public interface IBuffer<T> {
 	 */
 	public T getLast();
 	/**
+	 * gets element (according to lifo) 
+	 * @return 
+	 */
+	public T getFirst();
+	/**
 	 * gets element (according to lifo) and clears buffer
 	 * @return 
 	 */

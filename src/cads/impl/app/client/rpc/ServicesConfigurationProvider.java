@@ -1,4 +1,4 @@
-package cads.impl.rpc.consumer;
+package cads.impl.app.client.rpc;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -44,7 +44,7 @@ public class ServicesConfigurationProvider {
 			throws JsonParseException, JsonMappingException, IOException, InstantiationException, IllegalAccessException {
 
 		// sender to require providers configuration
-		Client sender = new UDPClient(brokerIp, brokerPort);
+		Client<String> sender = new UDPClient(brokerIp, brokerPort);
 		DatagramSocket socket = sender.getSocket();
 
 		// receiver to receive providers configuration
@@ -61,8 +61,10 @@ public class ServicesConfigurationProvider {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			providersConfiguration = providersConfigurationBuffer.getLast();
-			System.out.println("Consumer Retrieved: " + providersConfiguration);
+			if(providersConfigurationBuffer.hasElements()){
+				providersConfiguration = providersConfigurationBuffer.getLast();
+				System.out.println("Consumer Retrieved: " + providersConfiguration);
+			}
 		}
 		
 		LookupMessage message =  marshalingService.deSerialize(providersConfiguration, LookupMessage.class);
