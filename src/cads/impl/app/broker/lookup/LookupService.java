@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -23,10 +24,11 @@ public class LookupService implements Runnable{
 	private DatagramSocket socket;
 	private MarshallingService marshallingService;
 	
-	public LookupService(int port) 
+	public LookupService(String ip, int port) 
 			throws SocketException, InstantiationException, IllegalAccessException, UnknownHostException{
 
-		this.socket = new DatagramSocket(port);
+		InetSocketAddress address = new InetSocketAddress(ip, port);
+		this.socket = new DatagramSocket(address);
 		this.marshallingService = new MarshallingService();
 		this.registeredProviders = Factory.current().getInstance(RegisteredProviders.class);
 	}

@@ -16,6 +16,7 @@ import cads.impl.rpc.data.Service;
 public class ForwardingService {
 
 	private static final int START_PORT = 10005;
+	private String brokerip;
 	private int count;
 	private int lastGeneratedPort;
 	private RegisteredProviders registeredProviders;
@@ -26,6 +27,8 @@ public class ForwardingService {
 		this.pipes = new HashMap<String, ForwardingPipe>();
 		this.registeredProviders = Factory.current().<RegisteredProviders>getInstance(RegisteredProviders.class);
 	}
+	
+	
 
 	public void registerProvider(DatagramPacket packet, Provider provider)
 			throws InstantiationException, IllegalAccessException, UnknownHostException, SocketException {
@@ -62,7 +65,7 @@ public class ForwardingService {
 			// set port for consumer
 			bService.setPortForConsumer(receivingPort);
 
-			ForwardingPipe pipe = new ForwardingPipe(provider, bService, ipAddress);
+			ForwardingPipe pipe = new ForwardingPipe(brokerip, provider, bService, ipAddress);
 			this.pipes.put(key, pipe);
 			pipe.start();
 		} else {
@@ -72,5 +75,9 @@ public class ForwardingService {
 
 	private int getNewPort() {
 		return (lastGeneratedPort ++);
+	}
+	
+	public void setIpAddr(String ip){
+		brokerip = ip;
 	}
 }

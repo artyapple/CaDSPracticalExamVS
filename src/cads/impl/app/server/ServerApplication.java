@@ -64,19 +64,25 @@ public class ServerApplication {
 		// simulation;localhost:10000;C:\Users\AI\Documents\Studium\SS2018\VS\src\git\CaDSPracticalExamVS\gen\json\services.json
 		String a = args[0];
 		String[] sarg = a.split(";");
+		for(String s : sarg){
+			System.out.println(s);
+		}
 		int i = 0;
 		System.out.println(a);
 		if (sarg[i].contains("sim")) {
 			isSimulation = true;
 			i++;
+			System.out.println("sim: "+ isSimulation);
 		}
 		if (sarg[i].contains(":")) {
 			String[] net = sarg[i].replaceAll(" ", "").split(":");
 			brokerIp = net[0];
 			brokerPort = Integer.parseInt(net[1]);
+			System.out.println(brokerIp+":"+brokerPort);
 			i++;
 		}
 		configPathStr = sarg[i].replaceAll(" ", "");
+		System.out.println(configPathStr);
 	}
 
 	private void initStaticElements()

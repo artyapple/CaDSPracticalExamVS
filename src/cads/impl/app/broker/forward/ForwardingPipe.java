@@ -22,14 +22,14 @@ public class ForwardingPipe {
 	private BrokerProvider provider;
 	private BrokerService service;
 	
-	public ForwardingPipe(BrokerProvider provider, BrokerService service, InetAddress ipAddress) 
+	public ForwardingPipe(String brokerip, BrokerProvider provider, BrokerService service, InetAddress ipAddress) 
 			throws InstantiationException, IllegalAccessException, UnknownHostException, SocketException{
 		this.provider = provider;
 		this.service = service;
 		this.senderBuffer = new Buffer<>(BUFFER_MAX_SIZE);
 		this.receiverBuffer = new Buffer<>(BUFFER_MAX_SIZE);
 		this.sender = new ForwardingSender(ipAddress, service.getSendingPort(), receiverBuffer, senderBuffer);
-		this.receiver = new ForwardingReceiver(service.getReceivingPort(), receiverBuffer, senderBuffer);
+		this.receiver = new ForwardingReceiver(brokerip, service.getReceivingPort(), receiverBuffer, senderBuffer);
 	}
 	
 	public void start() {

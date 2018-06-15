@@ -2,6 +2,7 @@ package cads.impl.app.broker.register;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 
 import cads.impl.app.broker.forward.ForwardingService;
@@ -16,12 +17,14 @@ public class RegisterService implements Runnable {
 	private ForwardingService fwdService;
 	private DatagramSocket socket;
 
-	public RegisterService(int port) throws SocketException, InstantiationException, IllegalAccessException {
+	public RegisterService(String ip, int port) throws SocketException, InstantiationException, IllegalAccessException {
 
 		Factory fac = Factory.current();
 		this.fwdService = fac.getInstance(ForwardingService.class);
+		this.fwdService.setIpAddr(ip);
 		this.marshalingService = fac.getInstance(MarshallingService.class);
-		this.socket = new DatagramSocket(port);
+		InetSocketAddress address = new InetSocketAddress(ip, port);
+		this.socket = new DatagramSocket(address);
 	}
 
 	@Override

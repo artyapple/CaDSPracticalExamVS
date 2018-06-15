@@ -42,7 +42,6 @@ public class VertikalMotor implements IVertikalMotor, Observer{
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void update(Observable o, Object arg) {
-		System.out.println("motor update");
 		ObservableValue preCast = (ObservableValue) o;
 
 		ObservableValue<Integer> currentObservable = (ObservableValue<Integer>) preCast;

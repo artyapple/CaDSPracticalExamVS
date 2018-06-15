@@ -35,8 +35,7 @@ public class HorizontalMoveGuiController implements IIDLCaDSEV3RMIMoveHorizontal
 	}
 	
 	private IHorizontalMotor getCurrent() throws InstantiationException, IllegalAccessException{
-		return factory.getInstance("IHorizontalMotor" + manager.getCurrent());				
-				
+		return factory.getInstance("IHorizontalMotor" + manager.getCurrent());							
 	}
 
 }

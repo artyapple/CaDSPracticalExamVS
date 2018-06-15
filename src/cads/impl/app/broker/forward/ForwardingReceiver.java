@@ -3,6 +3,7 @@ package cads.impl.app.broker.forward;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 
 import cads.impl.app.broker.data.ReceivedPacket;
@@ -19,11 +20,12 @@ public class ForwardingReceiver implements Runnable {
 	private ForwardingReceiverSender receiverSender;
 	private int port;
 
-	public ForwardingReceiver(int port, Buffer<ReceivedPacket> receiverBuffer, Buffer<ReceivedPacket> senderBuffer) throws SocketException {
+	public ForwardingReceiver(String ip, int port, Buffer<ReceivedPacket> receiverBuffer, Buffer<ReceivedPacket> senderBuffer) throws SocketException {
 		this.port = port;
 		this.senderBuffer = senderBuffer;
 		this.receiverBuffer = receiverBuffer;
-		this.socket = new DatagramSocket(this.port);
+		InetSocketAddress address = new InetSocketAddress(ip, port);
+		this.socket = new DatagramSocket(address);
 		this.receiverSender = new ForwardingReceiverSender(this.socket, this.receiverBuffer);
 	}
 
