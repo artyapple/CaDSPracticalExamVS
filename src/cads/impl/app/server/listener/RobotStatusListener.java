@@ -6,16 +6,24 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.cads.ev3.middleware.hal.ICaDSEV3RobotStatusListener;
 import org.json.simple.JSONObject;
 
 import cads.impl.app.server.listener.ObservableValue.ValueType;
+import cads.impl.mom.IBuffer;
 import cads.impl.mom.MarshallingService;
+import cads.impl.mom.buffer.State;
+import cads.impl.mom.kafka.CaDSKafkaProducer;
 import cads.impl.os.UDPClient;
 
 public class RobotStatusListener implements ICaDSEV3RobotStatusListener {
 
 	private MarshallingService ms = new MarshallingService();
+	private IBuffer<String> buffer;
+	private Producer<Long, String> producer;
+	private final String topic;
 
 	private ObservableValue<Integer> vertikalValue;
 	private ObservableValue<Integer> horizontalValue;
@@ -25,34 +33,41 @@ public class RobotStatusListener implements ICaDSEV3RobotStatusListener {
 		VERTIKAL, HORIZONTAL, GRIPPER
 	}
 
-	public RobotStatusListener() {
-		this(new ObservableValue<Integer>(0), new ObservableValue<Integer>(0), new ObservableValue<Boolean>(false));
+	public RobotStatusListener(IBuffer<String> buffer, String topic) {
+		this(new ObservableValue<Integer>(0), new ObservableValue<Integer>(0), new ObservableValue<Boolean>(false), buffer, topic);
 	}
 
 	public RobotStatusListener(ObservableValue<Integer> vertikalValue, ObservableValue<Integer> horizontalValue,
-			ObservableValue<Boolean> gripperOpen) {
+			ObservableValue<Boolean> gripperOpen, IBuffer<String> buffer, String topic) {
 		super();
+		this.buffer = buffer;
 		this.vertikalValue = vertikalValue;
 		this.vertikalValue.setValueType(ValueType.VERTIKAL);
 		this.horizontalValue = horizontalValue;
 		this.horizontalValue.setValueType(ValueType.HORIZONTAL);
 		this.gripperOpen = gripperOpen;
 		this.gripperOpen.setValueType(ValueType.GRIPPER);
+		this.topic = topic;
+		this.producer = new CaDSKafkaProducer(topic, buffer).getProducer();
 	}
 
 	@Override
 	public void onStatusMessage(JSONObject json) {
 		try {
-			Status status = ms.deSerialize(json.toJSONString(), Status.class);
-			if (status.getStatusType().equals(Status.StatusType.VERTICAL)) {
+			String str = json.toJSONString();
+			State status = ms.deSerialize(str, State.class);
+			if (status.getStatusType().equals(State.StatusType.VERTICAL)) {
 				vertikalValue.setValue(status.getPercent());
-			} else if (status.getStatusType().equals(Status.StatusType.HORIZONTAL)) {
+				producer.send(new ProducerRecord<>(topic, System.currentTimeMillis(), str));
+			} else if (status.getStatusType().equals(State.StatusType.HORIZONTAL)) {
 				horizontalValue.setValue(status.getPercent());
-			} else if (status.getStatusType().equals(Status.StatusType.GRAB)) {
-				gripperOpen.setValue(status.isGrapOpen());
-			} else {
-
+				producer.send(new ProducerRecord<>(topic, System.currentTimeMillis(), str));
+			} else if (status.getStatusType().equals(State.StatusType.GRAB)){
+				producer.send(new ProducerRecord<>(topic, System.currentTimeMillis(), str));
 			}
+			
+			//System.out.println(str);
+			//buffer.add(str);
 		} catch (IOException e) {
 			Logger.getLogger(UDPClient.class.getName()).log(Level.WARNING, "Status failed: " + json.toJSONString(), e);
 		}

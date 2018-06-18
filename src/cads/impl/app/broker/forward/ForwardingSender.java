@@ -55,7 +55,7 @@ public class ForwardingSender implements Runnable {
 					
 					byte[] sendData = new byte[MAX_MESSAGE_SIZE];
 					sendData = message.getBytes();
-					System.out.println(sendData);
+					//System.out.println(sendData);
 					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, destinationAddress,
 							destinationPort);
 					socket.send(sendPacket);
@@ -86,7 +86,6 @@ public class ForwardingSender implements Runnable {
 					// get incoming message
 					this.socket.receive(receivePacket);
 					String message = new String(receivePacket.getData()).substring(0, receivePacket.getLength());
-					System.out.println(message);
 					BrokerMessage brokerMessage = marshallingService.deSerialize(message, BrokerMessage.class);
 					ReceivedPacket packet = new ReceivedPacket();
 					packet.setAdress(brokerMessage.getSourceAddress());

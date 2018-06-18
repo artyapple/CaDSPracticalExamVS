@@ -5,11 +5,9 @@ import java.io.IOException;
 import org.cads.ev3.gui.swing.CaDSRobotGUISwing;
 
 import cads.impl.FactoryConfig;
-import cads.impl.app.client.gui.ConsumerGuiController;
-import cads.impl.app.client.gui.GripperMoveGuiController;
-import cads.impl.app.client.gui.HorizontalMoveGuiController;
+import cads.impl.app.client.gui.CaDsGUI;
 import cads.impl.app.client.gui.RobotManager;
-import cads.impl.app.client.gui.VerticalMoveGuiController;
+import cads.impl.app.client.gui.StatusGUIController;
 import cads.impl.app.client.rpc.ServicesConfigurationProvider;
 import cads.impl.factory.Factory;
 import cads.impl.rpc.configuration.ProvidersConfiguration;
@@ -54,36 +52,6 @@ public class ClientApplication {
 		} else {
 			System.out.println("param list empty");
 		}
-		
-		
-//		Options options = new Options();
-//		OptionBuilder.withLongOpt("port");
-//		OptionBuilder.withDescription("Broker port");
-//		Option port = OptionBuilder.create("p");
-//		options.addOption(port);
-//		OptionBuilder.withLongOpt("ipaddr");
-//		OptionBuilder.withDescription("Broker IP");
-//		Option ip = OptionBuilder.create("ip");
-//		options.addOption(ip);
-//		Option mock = OptionBuilder.withLongOpt("mock").withDescription("Broker mock").create("m");
-//		options.addOption(mock);
-//
-//		CommandLineParser parser = new BasicParser();
-//		HelpFormatter formatter = new HelpFormatter();
-//		CommandLine cmd;
-//		
-//		try {
-//			cmd = parser.parse(options, args);
-//			isMock = cmd.hasOption(mock.getArgName());	
-//			brokerHost= cmd.getOptionValue("ip", brokerHost);
-//			brokerPort= Integer.parseInt(cmd.getOptionValue("p", "4000"));
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			formatter.printHelp("consumer", options);
-//			System.exit(1);
-//            return;
-//		}
 	}
 
 	private void configurateClient(String brokerIp, ProvidersConfiguration providersConfiguration)
@@ -117,14 +85,17 @@ public class ClientApplication {
 					factory.registerInstance(controllingService, service.getServiceName() + provider.getAlias());
 				}
 			}
+			
 		}
 		// initialize client GUI
-		GripperMoveGuiController grabController = new GripperMoveGuiController();
+		/*GripperMoveGuiController grabController = new GripperMoveGuiController();
 		VerticalMoveGuiController verticalMovingController = new VerticalMoveGuiController();
 		HorizontalMoveGuiController horizontalMovingController = new HorizontalMoveGuiController();
-		ConsumerGuiController consumerGui = new ConsumerGuiController();
-		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(consumerGui, grabController, verticalMovingController,
-				horizontalMovingController, null);
+		ConsumerGuiController consumerGui = new ConsumerGuiController();*/
+		
+		CaDsGUI c = new CaDsGUI();
+		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(c, c, c,
+				c, null);
 		factory.registerInstance(gui, CaDSRobotGUISwing.class);
 
 		// TODO: maybe later, not prio 1
@@ -136,6 +107,7 @@ public class ClientApplication {
 		// them
 		for (Provider provider : providersConfiguration.getProviders()) {
 			gui.addService(provider.getAlias());
+			new Thread(new StatusGUIController(provider.getStatusChannel(), provider.getAlias())).start();
 			// TODO: and realize status controller (with receiver) via broker
 			// factory.registerType(StatusReceiverBuffer.class);
 			// StatusGuiController statusController = new StatusGuiController();

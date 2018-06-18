@@ -70,7 +70,7 @@ public class ForwardingReceiver implements Runnable {
 						String sendMessage = packet.getMessage();
 						byte[] sendData = new byte[MAX_MESSAGE_SIZE];
 						sendData = sendMessage.getBytes();
-						System.out.println("Broker rec: "+sendData);
+						//System.out.println("Broker rec: "+sendData);
 						DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAdress(), packet.getPort());
 						socket.send(sendPacket);
 					} catch (IOException e) {

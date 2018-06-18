@@ -1,5 +1,6 @@
 {
 	"alias": "iRobot_from_berlin",
+	"statusChannel": "statusRobot1",
 	"services": [
 		{
 			"alias": "GrabService1",

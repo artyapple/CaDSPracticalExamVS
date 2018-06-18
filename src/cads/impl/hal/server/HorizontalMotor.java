@@ -81,7 +81,6 @@ public class HorizontalMotor implements IHorizontalMotor, Observer {
 		@Override
 		public void run() {
 			while (true) {
-				System.out.println("motor running");
 				switch (getMovingDirection()) {
 				case LEFT:
 					moveLeft();

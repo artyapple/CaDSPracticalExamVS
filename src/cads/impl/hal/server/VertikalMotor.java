@@ -82,7 +82,6 @@ public class VertikalMotor implements IVertikalMotor, Observer{
 		@Override
 		public void run() {
 			while (true) {
-				System.out.println("motor running");
 				switch (getMovingDirection()) {
 				case UP:
 					moveUp();

@@ -6,8 +6,17 @@ import java.util.List;
 public class Provider {
 	
 	private String alias;
+	private String statusChannel;
 	private List<Service> services;
 	
+	public String getStatusChannel() {
+		return statusChannel;
+	}
+
+	public void setStatusChannel(String statusChannel) {
+		this.statusChannel = statusChannel;
+	}
+
 	public Provider(){
 		this.services = new ArrayList<>();
 	}

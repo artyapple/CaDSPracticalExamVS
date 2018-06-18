@@ -1,8 +1,8 @@
-package cads.impl.app.server.listener;
+package cads.impl.mom.buffer;
 
-public class Status {
 
-	public enum StatusType {VERTICAL, HORIZONTAL, GRAB, NONE}
+public class State {
+public enum StatusType {VERTICAL, HORIZONTAL, GRAB, NONE}
 	
 	private String state;
 	private String type;

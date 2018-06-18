@@ -38,7 +38,7 @@ public class RegisterService implements Runnable {
 				socket.receive(receivePacket); 
 				if (receivePacket != null) {
 					registerProvider(receivePacket, new String(receivePacket.getData()));
-					System.out.println(new String(receivePacket.getData()));
+					//System.out.println(new String(receivePacket.getData()));
 				}
 
 			} catch (Exception e) {

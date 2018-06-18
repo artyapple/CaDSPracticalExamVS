@@ -22,8 +22,10 @@ import cads.impl.hal.IVertikalMotor;
 import cads.impl.hal.server.GripperMotor;
 import cads.impl.hal.server.HorizontalMotor;
 import cads.impl.hal.server.VertikalMotor;
+import cads.impl.mom.IBuffer;
 import cads.impl.mom.MarshallingService;
 import cads.impl.mom.buffer.Buffer;
+import cads.impl.mom.kafka.CaDSKafkaProducer;
 import cads.impl.mom.middleware.ClientMiddleware;
 import cads.impl.os.UDPClient;
 import cads.impl.rpc.configuration.ConfigurationReader;
@@ -52,9 +54,10 @@ public class ServerApplication {
 
 		FactoryConfig.registerTypesForService();
 
-		initStaticElements();
-
 		ServicesConfiguration servicesConfiguration = readServicesConfiguration();
+		initStaticElements(servicesConfiguration);
+
+		
 		startServices(servicesConfiguration);
 		sendConfigurationToBroker(servicesConfiguration);
 	}
@@ -85,10 +88,11 @@ public class ServerApplication {
 		System.out.println(configPathStr);
 	}
 
-	private void initStaticElements()
+	private void initStaticElements(ServicesConfiguration servicesConfiguration)
 			throws InstantiationException, IllegalAccessException, SocketException, UnknownHostException {
 		Factory fac = Factory.current();
-		RobotStatusListener robotStatusListener = new RobotStatusListener();
+		IBuffer<String> statusBuffer = new Buffer<>(1);
+		RobotStatusListener robotStatusListener = new RobotStatusListener(statusBuffer, servicesConfiguration.getStatusChannel());
 		// initialize robot
 
 		CaDSEV3RobotHAL robot = CaDSEV3RobotHAL.createInstance(
@@ -107,6 +111,9 @@ public class ServerApplication {
 		HorizontalMotor horizontalMotor = new HorizontalMotor();
 		robotStatusListener.subscribe(ValueToObserve.HORIZONTAL, horizontalMotor);
 		fac.registerInstance(horizontalMotor, IHorizontalMotor.class);
+
+		//CaDSKafkaProducer status = new CaDSKafkaProducer(,statusBuffer);
+		//new Thread(status).start();
 
 	}
 
@@ -148,6 +155,7 @@ public class ServerApplication {
 		Provider provider = new Provider();
 		provider.setAlias(servicesConfiguration.getAlias());
 		provider.setServices(servicesConfiguration.getServices());
+		provider.setStatusChannel(servicesConfiguration.getStatusChannel());
 		String initialMessage = new MarshallingService().serialize(provider);
 
 		// put the message to buffer to send

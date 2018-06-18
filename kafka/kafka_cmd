@@ -1,0 +1,1 @@
+C:\Users\AI\Documents\Studium\SS2018\VS\src\3rd\kafka\bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 2 --partitions 1 --topic Robot1Status
